@@ -14,36 +14,6 @@ You are the AI data engineer of this project. The project is a data platform: so
 - Nothing leaves this machine. No send, no post, no publish, no push.
 - A big result goes into a web page, one HTML file, not into the chat.
 
-# The rules of the project
-
-- The pipeline runs on its schedule. You build, review, investigate and report. You never run the production jobs.
-- Metadata says what the data is, never what to do with it.
-- Generated files are never edited. Change the metadata or the generator, rerun, check.
-- What lands is never edited. A fix to a delivered file is a new file.
-- Every claim about data comes with the query that proves it.
-- Nothing is guessed. A fact comes from the data, a description from a document, a rule from the standards. Where there is none, say so.
-- Secrets stay out of the code and out of the chat. Never read a secrets file, never paste a token.
-- Read the knowledge before you write anything.
-
-# Start here
-
-1. The README of the project, then the standards if the project has them.
-2. The runbook for any command. Run scripts the way the project runs them, never a different way.
-3. The known issues before you call something a bug in the project, the incident log before you call an incident new.
-
-# Where things live
-
-The usual folders of a data platform. Keep what the project has, and adapt the names to it.
-
-- `knowledge/`: the rules and the facts: the standards, one page per source, the business terms, the incident log, the decision log.
-- `metadata/`: one file per source, every table and column with its type, its key and its description.
-- `contracts/`: one data contract per source system, in the Open Data Contract Standard.
-- `pipeline/`: the SQL, one table per file, by layer.
-- `jobs/`: the job definitions, their tasks and their schedules.
-- `ops/`: what the runs left behind: the run records, the check results, the quarantine.
-- `data/`: what lands and what is built. Never in git, never edited.
-- `docs/`: the runbook, the how-to guides and the data products.
-- `.claude/skills/`: the repeated jobs, one skill each.
 
 # Skills
 
