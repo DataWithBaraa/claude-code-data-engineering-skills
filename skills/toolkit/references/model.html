@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Data model · newvolt-data-platform</title>
+<style>
+@font-face{font-family:'Bricolage Grotesque';font-weight:200 800;font-display:block;src:url('fonts/BricolageGrotesque-700.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-weight:100 800;font-display:block;src:url('fonts/JetBrainsMono-500.woff2') format('woff2');}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0f0a1e;--plate:#1a1230;--ink:#ece7f8;--ink-2:rgba(236,231,248,.72);--line:rgba(236,231,248,.14);--line-2:rgba(236,231,248,.08);
+  --purple:#8a63f2;--purple-soft:#c9b8ff;--red:#ff8a73;--orange:#ffa657;--gold:#ffd23f;}
+html{background:var(--bg);}
+body{font-family:'Bricolage Grotesque',sans-serif;font-weight:400;color:var(--ink);background:var(--bg);font-size:20px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+.id,code,pre,.t td.m,.t td.num{font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;}
+.id{font-size:.95em;color:var(--purple-soft);white-space:nowrap;}
+.nw{white-space:nowrap;}
+.red{color:var(--red);} .orange{color:var(--orange);} .dim{color:var(--ink-2);}
+a{color:inherit;text-decoration:none;}
+[id]{scroll-margin-top:100px;}
+
+/* the top bar */
+nav{position:sticky;top:0;z-index:10;height:72px;background:#0d0919;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 48px;gap:28px;white-space:nowrap;}
+nav .brand{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--ink);margin-right:12px;}
+nav a.p{font-size:19px;color:var(--ink-2);padding:8px 12px;border-radius:8px;}
+nav a.p:hover{color:var(--ink);background:rgba(236,231,248,.05);}
+nav a.p.on{color:var(--ink);background:rgba(138,99,242,.2);}
+nav .built{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink-2);white-space:nowrap;}
+main{max-width:1440px;margin:0 auto;padding:56px 48px 160px;}
+p,.one,.lead{text-wrap:pretty;}
+
+/* head */
+h1{font-size:48px;font-weight:800;letter-spacing:-.02em;line-height:1.05;}
+.lead{margin-top:14px;font-size:24px;line-height:1.4;}
+.kpis{margin-top:36px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.kpis.k5{grid-template-columns:repeat(5,minmax(0,1fr));} .kpis.k4{grid-template-columns:repeat(4,minmax(0,1fr));}
+.kpi{padding:22px 20px 22px 0;}
+.kpi + .kpi{border-left:1px solid var(--line);padding-left:22px;}
+.kpi .l{font-size:19px;color:var(--ink-2);}
+.kpi .v{margin-top:8px;font-size:44px;font-weight:700;line-height:1;letter-spacing:-.01em;white-space:nowrap;}
+.kpi .sub{margin-top:8px;font-size:18px;color:var(--ink-2);font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+main > .s:first-of-type{margin-top:64px;} .kpis{margin-top:28px;} .kpis + .s{margin-top:80px;}
+.kpi .v.red{color:var(--red);} .kpi .v.orange{color:var(--orange);} .kpi .v.sm{font-size:36px;margin-top:12px;}
+.kpi .v .id{font-size:44px;font-weight:700;color:var(--ink);}
+
+/* screens */
+.s{margin-top:104px;} .s.run-s{margin-top:152px;}
+.s h2{font-size:32px;font-weight:700;letter-spacing:-.01em;line-height:1.15;text-wrap:balance;}
+.s h2 .id{font-size:.9em;font-weight:600;}
+.s .one{margin-top:8px;font-size:22px;font-weight:400;line-height:1.45;}
+.vis{margin-top:30px;}
+.vis svg{display:block;}
+
+/* tables */
+table.t{width:100%;border-collapse:collapse;}
+.t th{font-size:17px;font-weight:600;color:var(--ink-2);text-align:left;padding:0 28px 12px 0;border-bottom:1px solid var(--line);white-space:nowrap;}
+.t th.num{text-align:right;} .t th.grow{width:100%;}
+.t td{padding:12px 28px 12px 0;border-bottom:1px solid var(--line-2);vertical-align:baseline;font-size:20px;line-height:1.4;white-space:nowrap;}
+.t td:last-child,.t th:last-child{padding-right:0;}
+.t td.m,.t td.num{font-size:19px;} .t td.num{text-align:right;}
+.t td.col{color:var(--ink);font-weight:600;}
+.t td.wrap{white-space:normal;line-height:1.45;text-wrap:balance;}
+.t th.w100{width:100px;} .t th.w130{width:130px;} .t th.w160{width:160px;} .t th.w180{width:180px;} .t th.w200{width:200px;} .t th.w240{width:240px;} .t th.w290{width:290px;} .t th.w320{width:320px;} .t th.w400{width:400px;} .t th.w230{width:230px;} .t th.w250{width:250px;} .t th.w260{width:260px;} .t th.w270{width:270px;} .t th.w280{width:280px;} .t th.w300{width:300px;} .t th.w420{width:420px;} .t th.w110{width:110px;} .t th.w150{width:150px;} .t th.w170{width:170px;} .t th.w200{width:200px;} .t th.w220{width:220px;} .t th.w330{width:330px;}
+.lin .node circle.cross{fill:var(--bg);stroke:var(--purple-soft);stroke-width:1.5;}
+.lin .wire.bus path,.lin .wire.bus circle{opacity:0;}
+.lin .wire.bus.up path,.lin .wire.bus.up circle,.lin .wire.bus.down path,.lin .wire.bus.down circle{opacity:1;}
+.t.fixed{table-layout:fixed;} .t.fixed td{white-space:normal;}
+.t td.bar{vertical-align:middle;} .t .b{fill:var(--purple);}
+table.t.auto{width:auto;min-width:60%;} .t.auto th.grow{width:auto;}
+table.t.w1060{width:1060px;}
+
+/* pipeline of layers, as on the incident map */
+.layers{display:flex;align-items:stretch;}
+.layers .arr{flex:none;width:40px;align-self:center;color:var(--ink-2);}
+.layer{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:16px 18px 18px;background:rgba(236,231,248,.03);}
+.layer .nm{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--purple-soft);}
+.layer .cnt{margin-top:8px;font-size:40px;font-weight:700;line-height:1;}
+.layer .cnt small{font-size:19px;font-weight:600;color:var(--ink-2);margin-left:8px;}
+.layer .sub{margin-top:10px;font-size:18px;color:var(--ink-2);line-height:1.35;}
+.layer.red{border:2px dashed var(--red);background:none;} .layer.red .cnt{color:var(--red);}
+.layer.gold{border-color:rgba(255,210,63,.6);}
+.arr svg{width:40px;height:24px;fill:none;stroke:var(--ink-2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.arr.gate svg{width:56px;height:56px;} .layers .arr.gate{width:56px;} .arr.gate circle{stroke:var(--purple-soft);} .arr.gate text{fill:var(--ink);stroke:none;font-family:'JetBrains Mono',monospace;font-size:17px;}
+
+/* the page list */
+.plist{border-top:1px solid var(--line);}
+.prow{display:grid;grid-template-columns:220px minmax(0,1fr) 470px;column-gap:28px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--line-2);}
+.prow:hover{background:rgba(236,231,248,.03);}
+.prow .t1{font-size:24px;font-weight:700;} .prow .t2{font-size:20px;color:var(--ink-2);} .prow .t3{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--purple-soft);text-align:right;}
+
+.run{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:32px;}
+.plate{border:1px solid var(--line);border-radius:14px;padding:26px 30px 28px;background:var(--plate);}
+.plate .k{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink-2);}
+.plate .v{margin-top:8px;font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1;}
+.plate .v .st{font-size:22px;font-weight:600;margin-left:12px;vertical-align:4px;}
+.plate .line{margin-top:16px;font-size:19px;color:var(--ink-2);line-height:1.5;}
+.plate .line.raw{font-family:'JetBrains Mono',monospace;}
+.st.held,.st.red,.st.failed{color:var(--red);} .st.skipped{color:var(--orange);}
+
+/* strips */
+.strips{display:grid;row-gap:24px;}
+.strip{display:grid;grid-template-columns:270px minmax(0,1fr) 260px;align-items:center;column-gap:24px;}
+.strip .nm{font-size:19px;}
+.strip .cells{display:flex;gap:4px;flex-wrap:wrap;}
+.strip .cells i{display:block;width:26px;height:22px;border-radius:3px;background:var(--purple);}
+.strip .cells i.orange{background:var(--orange);} .strip .cells i.red{background:var(--red);} .strip .cells i.dim{background:rgba(236,231,248,.16);}
+.strip .cnt{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--ink-2);text-align:right;white-space:nowrap;}
+.strip .cnt b{font-weight:600;}
+
+/* charts */
+svg text{font-family:'Bricolage Grotesque',sans-serif;}
+svg .lbl{font-size:20px;fill:var(--ink);} svg .lbl tspan.m,svg .m{font-family:'JetBrains Mono',monospace;font-size:19px;}
+svg .val{font-family:'JetBrains Mono',monospace;font-size:19px;fill:var(--ink);}
+svg .bar{fill:var(--purple);} svg .bar.red{fill:var(--red);} svg .bar.orange{fill:var(--orange);} svg .bar.dim{fill:rgba(236,231,248,.16);}
+svg .axis{font-size:18px;font-weight:600;fill:var(--ink-2);}
+svg .base{stroke:var(--line);stroke-width:1.5;} svg .tick{stroke:rgba(236,231,248,.3);stroke-width:1.5;}
+
+/* the run calendar */
+.cal{display:grid;grid-template-columns:repeat(31,minmax(0,1fr));gap:6px;}
+.cal a{display:block;border:1px solid var(--line);border-radius:8px;padding:10px 0 9px;text-align:center;background:rgba(236,231,248,.03);}
+.cal a .d{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink);}
+.cal a .s{display:block;margin:8px auto 0;width:28px;height:28px;border-radius:6px;background:var(--purple);}
+.t.runs tr.hit td{background:rgba(138,99,242,.12);}
+.cal a.held .s,.cal a.red .s{background:var(--red);}
+.steps{display:flex;gap:2px;height:16px;}
+.steps i{display:block;height:16px;border-radius:2px;background:var(--purple);}
+.steps i.held,.steps i.red{background:var(--red);} .steps i.off{background:rgba(236,231,248,.12);}
+.t td.note{white-space:normal;font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink-2);line-height:1.45;}
+.t.runs{table-layout:fixed;}
+.t.runs col.c1{width:140px} .t.runs col.c2{width:120px} .t.runs col.c3{width:200px} .t.runs col.c4{width:130px} .t.runs col.c5{width:110px}
+.t.runs td.bar{vertical-align:top;padding-top:18px;}
+.t td.st{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:500;}
+.t.runs tr{scroll-margin-top:100px;}
+.t.runs tr:target td,.t.runs tr.hit td{background:rgba(138,99,242,.12);}
+
+/* catalog */
+.search{display:flex;align-items:center;gap:20px;margin-top:36px;}
+.search input{flex:1;font:inherit;font-size:22px;color:var(--ink);background:var(--plate);border:1px solid var(--line);border-radius:12px;padding:16px 20px;outline:none;}
+.search input:focus{border-color:var(--purple);}
+.search .n{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--ink-2);white-space:nowrap;}
+.sec{margin-top:64px;}
+.sec h2{display:flex;align-items:baseline;gap:18px;font-size:28px;font-weight:700;}
+.sec h2 .id{font-size:.85em;font-weight:600;} .sec h2 .n{font-size:19px;font-weight:500;color:var(--ink-2);}
+.sec .one{margin-top:6px;font-size:20px;color:var(--ink-2);}
+.tbl{border-top:1px solid var(--line-2);}
+.tbl .row{display:grid;grid-template-columns:28px 400px minmax(0,1fr) 110px 280px;column-gap:20px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line-2);cursor:pointer;}
+.tbl .row:hover{background:rgba(236,231,248,.03);}
+.tbl .row .tri{font-size:18px;color:var(--ink-2);transition:transform .15s;} .tbl .row.open .tri{transform:rotate(90deg);}
+.tbl .row .nm{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--ink);}
+.tbl .row .ds{font-size:19px;color:var(--ink-2);line-height:1.35;}
+.tbl .row .c{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink-2);text-align:right;}
+.tbl .row .k{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--purple-soft);line-height:1.35;}
+.tbl .cols{display:none;padding:6px 0 18px 48px;border-bottom:1px solid var(--line-2);}
+.tbl .cols.open{display:block;}
+.tbl .cols .col{display:grid;grid-template-columns:320px 140px minmax(0,1fr);column-gap:20px;padding:6px 0;font-size:18px;}
+.tbl .cols .col.full{display:block;color:var(--ink);padding-bottom:12px;}
+.tbl .cols .col .cn{font-family:'JetBrains Mono',monospace;color:var(--ink);} .tbl .cols .col .cn.key{color:var(--purple-soft);}
+.tbl .cols .col .ct{font-family:'JetBrains Mono',monospace;color:var(--ink-2);} .tbl .cols .col .cd{color:var(--ink-2);}
+.hidden{display:none !important;}
+
+/* lineage */
+.lin{position:relative;}
+.lin svg text{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);}
+.lin .node rect{fill:var(--plate);stroke:var(--line);stroke-width:1;rx:6;}
+.lin .node.gold rect{stroke:var(--gold);} .lin .node.stale rect{stroke:var(--red);stroke-dasharray:5 4;}
+.lin .node{cursor:pointer;}
+.lin .node.on rect{stroke:var(--purple-soft);stroke-width:2;fill:rgba(138,99,242,.22);}
+.lin .node.up rect{stroke:var(--purple);stroke-width:2;} .lin .node.down rect{stroke:var(--orange);stroke-width:2;}
+.lin .node.off{opacity:.22;}
+.lin .wire path{fill:none;stroke:rgba(201,184,255,.32);stroke-width:1.3;}
+.lin .wire.up path{stroke:var(--purple);stroke-width:2;} .lin .wire.down path{stroke:var(--orange);stroke-width:2;} .lin .wire.off{opacity:.08;}
+.lin .hd{font-size:19px;font-weight:600;fill:var(--ink);font-family:'Bricolage Grotesque',sans-serif;}
+.lin .hd2{font-size:17px;fill:var(--ink-2);font-family:'JetBrains Mono',monospace;}
+.lin .grp{font-size:17px;fill:var(--ink-2);font-family:'JetBrains Mono',monospace;}
+.lin .grp.hd3{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:600;fill:var(--ink);}
+
+/* call graph */
+.tree{display:grid;row-gap:0;}
+.tree{max-width:1060px;}
+.tree .n{display:grid;grid-template-columns:480px 300px 120px 160px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line-2);}
+.tree .n .fn{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--ink);}
+.tree .n.d0 .fn{font-weight:600;color:var(--purple-soft);} .tree .n.d1 .fn{padding-left:0;}
+.tree .n.d2 .fn{padding-left:36px;} .tree .n.d3 .fn{padding-left:72px;}
+.tree .n .mo{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink-2);}
+.tree .n .ln,.tree .n .ca{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink-2);text-align:right;}
+.tree .hd{display:grid;grid-template-columns:480px 300px 120px 160px;font-size:17px;font-weight:600;color:var(--ink-2);padding-bottom:12px;border-bottom:1px solid var(--line);}
+.tree .hd span:nth-child(3),.tree .hd span:nth-child(4){text-align:right;}
+
+/* data model */
+.er svg text{font-family:'JetBrains Mono',monospace;font-size:18px;fill:var(--ink);}
+.er .ent rect{fill:var(--plate);stroke:var(--line);stroke-width:1;rx:10;}
+.er .ent.planned rect{stroke-dasharray:6 5;} .er .ent.planned text{fill:var(--ink-2);}
+.er .ent .nm{font-size:21px;font-weight:600;fill:var(--ink);font-family:'Bricolage Grotesque',sans-serif;}
+.er .ent.planned .nm{fill:var(--ink-2);}
+.er .ent .key{fill:var(--purple-soft);}
+.er .rel{fill:none;stroke:rgba(236,231,248,.35);stroke-width:1.5;}
+.er .rel.planned{stroke-dasharray:6 5;}
+.er .lab{font-size:17px;fill:var(--ink-2);font-family:'JetBrains Mono',monospace;paint-order:stroke;stroke:#0f0a1e;stroke-width:8px;stroke-linejoin:round;}
+
+/* architecture */
+.srclist{border-top:1px solid var(--line);}
+.src{display:grid;grid-template-columns:200px 180px 260px minmax(0,1fr);column-gap:28px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line-2);}
+.src .nm{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--ink);}
+.src .f,.src .a{font-size:19px;color:var(--ink-2);} .src .b{font-size:19px;color:var(--ink);}
+.src.paused .nm,.src.paused .b{color:var(--ink-2);}
+.durbar{display:flex;gap:3px;} .durbar i{display:block;height:28px;border-radius:3px;background:var(--purple);}
+.stps{margin-top:20px;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:24px;}
+.stp{border-top:1px solid var(--line);padding-top:12px;} .stp .nm{display:block;font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--purple-soft);} .stp .d{display:block;margin-top:4px;font-size:24px;font-weight:700;} .stp .d small{display:block;font-size:17px;font-weight:400;color:var(--ink-2);margin-top:2px;}
+.rec{border:1px solid var(--line);border-radius:12px;padding:18px 22px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));}
+.rec div{padding-right:16px;} .rec .k{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--purple-soft);} .rec .v{margin-top:4px;font-size:19px;color:var(--ink-2);}
+.gates4{margin-top:32px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}
+.g4{border:1px solid var(--line);border-radius:12px;padding:18px 18px;}
+.g4 .h{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:700;}
+.g4 .h i{display:inline-flex;flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--purple-soft);align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:17px;font-style:normal;}
+.g4 .cells{margin-top:14px;display:flex;gap:3px;} .g4 .cells i{display:block;flex:1;height:16px;border-radius:2px;background:rgba(236,231,248,.22);} .g4 .cells i.red{background:var(--red);}
+.g4 .w{margin-top:8px;font-size:18px;color:var(--ink-2);line-height:1.4;}
+.g4 .o{margin-top:10px;font-size:18px;color:var(--ink);} .g4{display:flex;flex-direction:column;} .g4 .o{margin-top:auto;padding-top:10px;} .g4 .o b{color:var(--ink);font-weight:600;}
+.g4.live .o b{color:var(--red);}
+
+/* the graph pages */
+.lin svg{display:block;}
+.lin .node text{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);}
+.lin .node.dead rect{stroke-dasharray:5 4;stroke:rgba(255,138,115,.7);}
+.lin .node.dead text{fill:var(--ink-2);}
+.lin .wire.dim{stroke:rgba(201,184,255,.16);stroke-dasharray:4 5;}
+.lin .node text.sub2{fill:var(--ink-2);font-size:17px;}
+.lin .node text{letter-spacing:-.02em;}
+.lin .wire .dot{fill:rgba(201,184,255,.6);} .lin .wire.up .dot{fill:var(--purple);} .lin .wire.down .dot{fill:var(--orange);} .lin .wire.off .dot{opacity:.1;}
+.lin .wire.bus path{stroke-opacity:.6;} .lin .wire.same path{stroke-opacity:.5;}
+.er .sep{stroke:var(--line);stroke-width:1;}
+.er .colname{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);}
+.er .colname.key{fill:var(--purple-soft);} .er .colname.fk{fill:var(--ink);}
+
+.er .ct{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink-2);}
+.er .ent.fact rect{stroke:var(--gold);} .er .ent.obt rect{stroke-dasharray:6 5;}
+.er .stub{fill:rgba(201,184,255,.6);}
+.arch2 svg{display:block;}
+.t.marts td.wrap{white-space:normal;line-height:1.5;}
+.t.marts th:nth-child(3),.t.marts td:nth-child(3){width:300px;min-width:300px;white-space:normal;}
+.arch2 text{font-family:'Bricolage Grotesque',sans-serif;}
+.arch2 .hd{font-size:19px;font-weight:600;fill:var(--ink);}
+.arch2 .nm{font-family:'JetBrains Mono',monospace;font-size:18px;fill:var(--purple-soft);}
+.arch2 .sm{font-size:17px;fill:var(--ink-2);}
+.arch2 .big{font-size:34px;font-weight:700;fill:var(--ink);}
+.arch2 .bx{fill:var(--plate);stroke:var(--line);stroke-width:1;}
+.arch2 .bx.gold{stroke:var(--gold);} .arch2 .bx.paused{stroke-dasharray:5 4;}
+.arch2 .ar{stroke:rgba(236,231,248,.4);stroke-width:1.5;fill:none;} .arch2 .ar.thick{stroke-width:2;} .arch2 .ar.dash{stroke-dasharray:4 5;}
+.arch2 .gt{fill:var(--bg);stroke:var(--purple-soft);stroke-width:2;} .arch2 .gtn{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);}
+.arch2 .step{fill:var(--purple);}
+.t.scripts{table-layout:fixed;} .t.scripts td.wrap{white-space:normal;text-wrap:pretty;}
+
+/* level-1 architecture */
+.arch2 .l1{font-family:'JetBrains Mono',monospace;font-size:21px;fill:var(--ink);} .arch2 .gtn.big{font-size:19px;}
+.arch2 .step{fill:rgba(138,99,242,.32);} .arch2 .step.slow{fill:var(--purple);}
+.er .ent.hub rect{stroke:var(--purple-soft);stroke-width:2;} .er .lab{font-size:18px;fill:var(--ink);}
+.dead{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 32px;} .dead-fn{border-top:1px solid var(--line-2);padding-top:10px;} .dead-fn .fn{font-size:19px;} .dead-fn .mod,.dead-fn .why{margin-top:4px;font-size:17px;color:var(--ink-2);}
+.arch2 .nm-s{font-size:17px;}  .arch2 tspan.mono{font-family:'JetBrains Mono',monospace;font-weight:500;}
+.arch2 .l1s{font-size:18px;fill:var(--ink-2);}
+.arch2 .l1n{font-size:19px;fill:var(--ink-2);}
+.arch2 .bx.ends{fill:none;}
+.arch2 tspan.big{font-size:30px;font-weight:700;fill:var(--ink);} .arch2 tspan.sm{font-size:17px;fill:var(--ink-2);}
+.arch2 .ah{fill:rgba(236,231,248,.5);}
+.arch2 .nm2{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);font-weight:600;}
+.arch2 .sm2{font-size:17px;fill:var(--ink-2);}
+/* the layers strip and the call graph hubs */
+.lin .node.hub rect{stroke:var(--purple-soft);stroke-width:2;}
+/* data model level 1 */
+.er .ent .key{font-size:17px;}
+/* data quality */
+svg .hm.c0{fill:rgba(236,231,248,.08);} svg .hm.c1{fill:var(--orange);} svg .hm.c1.soft{fill:none;stroke:rgba(255,166,87,.6);stroke-width:1.5;} svg .hm.c3{fill:var(--red);}
+.lates{display:grid;row-gap:14px;}
+.late{display:grid;grid-template-columns:260px minmax(0,1fr) 110px;column-gap:24px;align-items:center;}
+.late .lbl{font-size:20px;} .late .bar{display:block;height:22px;background:rgba(236,231,248,.08);border-radius:3px;overflow:hidden;}
+.late .bar i{display:block;height:22px;background:var(--purple);} .late .bar i.red{background:var(--red);} .late .bar i.orange{background:var(--orange);}
+.late .n{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--ink-2);text-align:right;}
+.st.late{color:var(--orange);}
+/* catalog */
+.tabs{margin-top:28px;display:flex;gap:10px;}
+.tab{cursor:pointer;background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px 18px;font:inherit;font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--ink-2);}
+.tab span{margin-left:10px;color:var(--purple-soft);} .tab.on{color:var(--ink);background:rgba(138,99,242,.2);border-color:rgba(138,99,242,.5);}
+.csec{margin-top:28px;} .csec .one{font-size:20px;color:var(--ink-2);margin-bottom:14px;}
+.crow{border:1px solid var(--line);border-radius:12px;margin-top:8px;background:var(--plate);}
+.chead{display:grid;grid-template-columns:24px auto minmax(0,1fr) auto;grid-template-areas:"tri nm tags meta" "tri ds ds ds";column-gap:18px;row-gap:2px;align-items:center;padding:12px 18px;cursor:pointer;}
+.chead .tri{grid-area:tri;} .chead .nm{grid-area:nm;} .chead .meta{grid-area:meta;} .chead .tags{grid-area:tags;display:flex;justify-content:flex-start;} .chead .ds{grid-area:ds;}
+.chead:hover{background:rgba(236,231,248,.03);}
+.crow .tri{font-size:17px;color:var(--ink-2);transition:transform .15s;} .crow.open .tri{transform:rotate(90deg);}
+.chead .nm{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--ink);} .chead .ds{font-size:18px;color:var(--ink-2);white-space:nowrap;}
+.chead .meta{display:grid;grid-template-columns:130px 110px 110px 100px;column-gap:18px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--ink-2);white-space:nowrap;}
+.chead .tag{font-size:17px;color:var(--ink-2);border:1px solid var(--line);border-radius:6px;padding:2px 10px;margin-right:8px;white-space:nowrap;} .chead .tag.bad{color:var(--red);border-color:rgba(255,138,115,.5);}
+.crow .cols{display:none;padding:4px 18px 16px 60px;border-top:1px solid var(--line-2);} .crow.open .cols{display:block;}
+.crow .col{display:grid;grid-template-columns:280px 150px 50px 220px minmax(0,1fr);column-gap:18px;padding:7px 0;font-size:18px;border-bottom:1px solid var(--line-2);}
+.crow .col.hd{color:var(--ink-2);font-size:18px;font-weight:600;border-bottom:1px solid var(--line);}
+.crow .col .cn{font-family:'JetBrains Mono',monospace;color:var(--ink);} .crow .col .cn.key{color:var(--purple-soft);} .crow .col .ct,.crow .col .cx,.crow .col .cs{font-family:'JetBrains Mono',monospace;color:var(--ink-2);} .crow .col .cs{color:var(--ink);} .crow .col .cd{color:var(--ink-2);}
+
+/* the surface system: page, paper, card */
+.wide{width:1600px;margin-left:-128px;}
+.paper{background:linear-gradient(160deg,#1b1436 0%,#110c24 100%);border:1px solid rgba(138,99,242,.28);border-radius:16px;padding:28px;}
+.card,.plate,.crow,.cal a,.search input{background:#241a44;border:1px solid rgba(173,150,255,.26);box-shadow:0 1px 0 rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.25);}
+.card{border-radius:12px;}
+.layers.cards .layer{border-left-width:4px;padding:18px 16px 20px;}
+.layers.cards .layer .nm{color:var(--ink);font-size:19px;} .layers.cards .layer .cnt{font-size:40px;margin-top:10px;} .layers.cards .layer .sub{font-size:18px;color:var(--ink-2);margin-top:10px;}
+.layers.cards .arr.gate circle{fill:#15102a;}
+.paper.lates{padding:28px 32px;} .late .bar{background:rgba(236,231,248,.1);}
+.cal{gap:8px;} .cal a{border-radius:10px;padding:12px 0 12px;} .cal a .s{width:30px;height:30px;border-radius:7px;}
+.crow{margin-top:10px;} .crow .cols{border-top:1px solid rgba(236,231,248,.14);}
+.tab.on{background:#241a44;border-color:rgba(236,231,248,.3);}
+/* the drawing on paper */
+.lin2 .lane{fill:rgba(236,231,248,.03);stroke:none;}
+.lin2 .node rect{fill:#241a44;stroke:rgba(236,231,248,.24);rx:7;} .lin2 .node{filter:drop-shadow(0 1px 0 rgba(0,0,0,.45));}
+.lin2 .node rect.bar{stroke:none;rx:0;}
+.lin2 .node.stale rect{stroke:var(--red);stroke-dasharray:5 4;} .lin2 .node.stale rect.bar{fill:var(--red) !important;}
+.lin2 .node.dead rect{stroke:rgba(255,138,115,.7);stroke-dasharray:5 4;} .lin2 .node.dead rect.bar{fill:rgba(255,138,115,.7) !important;} .lin2 .node.dead text{fill:var(--ink-2);}
+.lin2 .node.hub rect{stroke:var(--purple-soft);stroke-width:2;}
+.lin2 .node.on rect{stroke:var(--purple-soft);stroke-width:2;fill:rgba(138,99,242,.35);} .lin2 .node.up rect{stroke:var(--purple);stroke-width:2;fill:#2d2060;} .lin2 .node.down rect{stroke:var(--orange);stroke-width:2;fill:#3a2a2a;}
+.lin2 .node.off{opacity:.18;}
+.lin2 .wire path{stroke:rgba(201,184,255,.34);stroke-width:1.3;} .lin2 .wire.dim path{stroke:rgba(201,184,255,.2);stroke-dasharray:4 5;}
+.lin2 .wire.up path{stroke:var(--purple);stroke-width:2.2;} .lin2 .wire.down path{stroke:var(--orange);stroke-width:2.2;} .lin2 .wire.off{opacity:.06;}
+.lin2 .hd{font-size:19px;} .lin2 .hd2{font-size:17px;} .lin2 .grp{font-size:17px;fill:var(--ink-2);letter-spacing:.01em;}
+.lin2 .wire.bus{opacity:0;} .lin2 .wire.bus.up,.lin2 .wire.bus.down,.lin2 .wire.bus.dim{opacity:1;} .lin2 .wire.bus.dim path{opacity:1;}
+.lin2 .wire.dim path{stroke:rgba(201,184,255,.26);stroke-dasharray:3 5;} .lin2 .wire.same path{stroke-opacity:.5;}
+.lin2 .node.layer-bronze rect.bar{fill:rgba(201,184,255,.6) !important;} .lin2 .node.layer-silver_clean rect.bar{fill:#c9b8ff !important;} .lin2 .node.layer-silver_core rect.bar{fill:#8a63f2 !important;}
+.lin2 .node.layer-gold rect.bar{fill:#ffd23f !important;} .lin2 .node.layer-_ops rect.bar{fill:rgba(236,231,248,.35) !important;}
+.lin2 .node text.sub2{fill:var(--ink-2);}
+.lin2 .node.slow rect{fill:var(--purple);stroke:none;} .lin2 .node.slow rect.bar{fill:var(--purple) !important;} .lin2 .node.slow text.sub2{fill:rgba(236,231,248,.85);}
+.lin2 .node.paused rect{stroke-dasharray:5 4;} .lin2 .node.paused text{fill:var(--ink-2);}
+.lin2 .gate circle{fill:#19122f;stroke:var(--purple-soft);stroke-width:2;} .lin2 .gate path{stroke:rgba(236,231,248,.3);stroke-width:1.5;fill:none;} .lin2 .gate text{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);}
+/* the architecture drawing */
+.arch3 svg{display:block;} .arch3 text{font-family:'Bricolage Grotesque',sans-serif;}
+.arch3 .hd{font-size:19px;font-weight:600;fill:var(--ink);} .arch3 tspan.mono{font-family:'JetBrains Mono',monospace;font-weight:500;}
+.arch3 .nm{font-family:'JetBrains Mono',monospace;font-size:18px;fill:var(--ink);} .arch3 .sm{font-size:17px;fill:var(--ink-2);}
+.arch3 .bx{fill:#241a44;stroke:rgba(236,231,248,.24);stroke-width:1;filter:drop-shadow(0 1px 0 rgba(0,0,0,.45));} .arch3 .bx.paused{stroke-dasharray:5 4;} .arch3 .bar{stroke:none;}
+.arch3 .ar{stroke:rgba(236,231,248,.4);stroke-width:1.5;fill:none;} .arch3 .ah{fill:rgba(236,231,248,.5);} .arch3 .dot{fill:var(--purple-soft);}
+.arch3 .gt{fill:#19122f;stroke:var(--purple-soft);stroke-width:2;} .arch3 .gtn{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);}
+.arch3 .step{fill:#241a44;stroke:rgba(236,231,248,.24);} .arch3 .step.slow{fill:var(--purple);stroke:none;}
+.arch3 .nm2{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);font-weight:600;} .arch3 .sm2{font-size:17px;fill:var(--ink-2);}
+.arch3 tspan.big{font-size:30px;font-weight:700;fill:var(--ink);} .arch3 tspan.sm{font-size:17px;fill:var(--ink-2);}
+/* the entity cards */
+.er2 svg{display:block;} .er2 svg text{font-family:'JetBrains Mono',monospace;font-size:17px;fill:var(--ink);}
+.er2 .ent rect{fill:#241a44;stroke:rgba(236,231,248,.24);stroke-width:1;rx:10;} .er2 .ent{filter:drop-shadow(0 1px 0 rgba(0,0,0,.45));} .er2 .ent rect.bar{stroke:none;rx:0;}
+.er2 .ent .nm{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:600;fill:var(--ink);} .er2 .ent .grain{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;fill:var(--ink-2);}
+.er2 .ent .key{fill:var(--purple-soft);}  .er2 .ent .more{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;fill:var(--ink-2);}
+.er2 .ent.fact rect{stroke:rgba(255,210,63,.7);} .er2 .ent.hub rect{stroke:var(--purple-soft);stroke-width:2;}
+.er2 .sep{stroke:rgba(236,231,248,.14);stroke-width:1;} .er2 .colname{fill:var(--ink);} .er2 .colname.key{fill:var(--purple-soft);}
+.er2 .rel{fill:none;stroke:rgba(201,184,255,.42);stroke-width:1.5;}
+.er2 .lab{font-size:18px;fill:var(--ink);paint-order:stroke;stroke:#19122f;stroke-width:8px;stroke-linejoin:round;}
+
+/* the ground, from the insight series: a radial purple ground, a faint grid, plates with a purple edge */
+:root{--ground:#080513;--plate:linear-gradient(160deg,#1b1436 0%,#110c24 100%);--plate-border:rgba(138,99,242,.28);--red:#ff8a73;}
+html{background:var(--ground);}
+body{background:var(--ground);}
+body{position:relative;min-height:100%;}
+body::before{content:'';position:absolute;left:0;right:0;top:0;height:min(1600px,100%);z-index:0;pointer-events:none;
+  background:radial-gradient(1500px 900px at 50% 420px,#161033 0%,#0e0a1d 55%,rgba(8,5,19,0) 100%);}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(173,150,255,.05) 1.2px,transparent 1.2px),linear-gradient(90deg,rgba(173,150,255,.05) 1.2px,transparent 1.2px);
+  background-size:46px 46px;}
+main,nav{position:relative;z-index:1;}
+nav{position:sticky;z-index:10;}
+.lin2 .node rect,.er2 .ent rect{stroke:rgba(173,150,255,.26);}
+</style>
+</head>
+<body>
+<nav><span class="brand">newvolt-data-platform</span><a class="p" href="index.html">Overview</a><a class="p" href="architecture.html">Architecture</a><a class="p" href="lineage.html">Data lineage</a><a class="p" href="calls.html">Call graph</a><a class="p on" href="model.html">Data model</a><a class="p" href="quality.html">Data quality</a><a class="p" href="runs.html">Runs</a><a class="p" href="catalog.html">Data catalog</a></nav>
+<main>
+  <h1>Data model</h1>
+  <p class="lead">The entities, the star schema of gold, the core tables and the clean tables with their keys.</p>
+
+  <section class="s">
+    <h2>The entities</h2>
+    <p class="one">12 core entities and their relationships; the framed two, <span class="id">orders</span> and <span class="id">products</span>, carry 5 each.</p>
+    <div class="vis wide paper er2"><svg viewBox="0 0 1544 802" width="1544" height="802"><path class="rel" d="M561 224 L561 124"/><text class="lab" x="573" y="150">customer_id</text><path class="rel" d="M843 286.0 L701 286.0"/><text class="lab" x="772" y="276.0" text-anchor="middle">order_id</text><path class="rel" d="M983 348 L983 448"/><text class="lab" x="995" y="374">sku</text><path class="rel" d="M1264 510.0 L1123 510.0"/><text class="lab" x="1193" y="500.0" text-anchor="middle">sku</text><path class="rel" d="M280 286.0 L421 286.0"/><text class="lab" x="351" y="276.0" text-anchor="middle">order_id</text><path class="rel" d="M1404 124 V158.0 H1053 V224"/><text class="lab" x="1228" y="148.0" text-anchor="middle">order_id, line_no</text><path class="rel" d="M983 572 L983 672"/><text class="lab" x="995" y="598">supplier_id</text><path class="rel" d="M701 734.0 L843 734.0"/><text class="lab" x="772" y="724.0" text-anchor="middle">supplier_id</text><path class="rel" d="M631 672 V622.0 H923 V572"/><text class="lab" x="777" y="612.0" text-anchor="middle">sku</text><path class="rel" d="M631 224 V174.0 H983 V124"/><text class="lab" x="807" y="164.0" text-anchor="middle">campaign_id</text><path class="rel" d="M701 510.0 L843 510.0"/><text class="lab" x="772" y="500.0" text-anchor="middle">sku</text><path class="rel" d="M280 62.0 L421 62.0"/><text class="lab" x="351" y="52.0" text-anchor="middle">customer_id</text><path class="rel" d="M210 124 V190.0 H491 V224"/><text class="lab" x="351" y="180.0" text-anchor="middle">order_id</text><g class="ent"><rect x="0" y="0" width="280" height="124"/><rect class="bar" x="0" y="0" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="20" y="32">tickets</text><text class="grain" x="20" y="58">one support ticket</text><text class="kk" x="20" y="88">PK</text><text class="key" x="52" y="88">ticket_id</text><text class="more" x="20" y="112">+ 6 more columns</text></g><g class="ent"><rect x="421" y="0" width="280" height="124"/><rect class="bar" x="421" y="0" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="441" y="32">customers</text><text class="grain" x="441" y="58">one customer</text><text class="kk" x="441" y="88">PK</text><text class="key" x="473" y="88">customer_id</text><text class="more" x="441" y="112">+ 6 more columns</text></g><g class="ent"><rect x="843" y="0" width="280" height="124"/><rect class="bar" x="843" y="0" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="863" y="32">campaigns</text><text class="grain" x="863" y="58">one campaign</text><text class="kk" x="863" y="88">PK</text><text class="key" x="895" y="88">campaign_id</text><text class="more" x="863" y="112">+ 5 more columns</text></g><g class="ent"><rect x="1264" y="0" width="280" height="124"/><rect class="bar" x="1264" y="0" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="1284" y="32">returns</text><text class="grain" x="1284" y="58">one returned line</text><text class="kk" x="1284" y="88">PK</text><text class="key" x="1316" y="88">return_id</text><text class="more" x="1284" y="112">+ 5 more columns</text></g><g class="ent"><rect x="0" y="224" width="280" height="124"/><rect class="bar" x="0" y="224" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="20" y="256">shipments</text><text class="grain" x="20" y="282">one shipment</text><text class="kk" x="20" y="312">PK</text><text class="key" x="52" y="312">shipment_id</text><text class="more" x="20" y="336">+ 5 more columns</text></g><g class="ent hub"><rect x="421" y="224" width="280" height="124"/><rect class="bar" x="421" y="224" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="441" y="256">orders</text><text class="grain" x="441" y="282">one order</text><text class="kk" x="441" y="312">PK</text><text class="key" x="473" y="312">order_id</text><text class="more" x="441" y="336">+ 7 more columns</text></g><g class="ent"><rect x="843" y="224" width="280" height="124"/><rect class="bar" x="843" y="224" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="863" y="256">order_lines</text><text class="grain" x="863" y="282">one line of an order</text><text class="kk" x="863" y="312">PK</text><text class="key" x="895" y="312">order_id, line_no</text><text class="more" x="863" y="336">+ 6 more columns</text></g><g class="ent"><rect x="421" y="448" width="280" height="124"/><rect class="bar" x="421" y="448" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="441" y="480">stock</text><text class="grain" x="441" y="506">one product on one day</text><text class="kk" x="441" y="536">PK</text><text class="key" x="473" y="536">sku, day</text><text class="more" x="441" y="560">+ 3 more columns</text></g><g class="ent hub"><rect x="843" y="448" width="280" height="124"/><rect class="bar" x="843" y="448" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="863" y="480">products</text><text class="grain" x="863" y="506">one product</text><text class="kk" x="863" y="536">PK</text><text class="key" x="895" y="536">sku</text><text class="more" x="863" y="560">+ 5 more columns</text></g><g class="ent"><rect x="1264" y="448" width="280" height="124"/><rect class="bar" x="1264" y="448" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="1284" y="480">product_prices</text><text class="grain" x="1284" y="506">one price from the day it applies</text><text class="kk" x="1284" y="536">PK</text><text class="key" x="1316" y="536">sku, effective_from</text><text class="more" x="1284" y="560">+ 2 more columns</text></g><g class="ent"><rect x="421" y="672" width="280" height="124"/><rect class="bar" x="421" y="672" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="441" y="704">purchase_orders</text><text class="grain" x="441" y="730">one purchase order</text><text class="kk" x="441" y="760">PK</text><text class="key" x="473" y="760">po_id</text><text class="more" x="441" y="784">+ 7 more columns</text></g><g class="ent"><rect x="843" y="672" width="280" height="124"/><rect class="bar" x="843" y="672" width="4" height="124" style="fill:#8a63f2"/><text class="nm" x="863" y="704">suppliers</text><text class="grain" x="863" y="730">one supplier</text><text class="kk" x="863" y="760">PK</text><text class="key" x="895" y="760">supplier_id</text><text class="more" x="863" y="784">+ 3 more columns</text></g></svg></div>
+  </section>
+  <section class="s">
+    <h2>The star schema</h2>
+    <p class="one">6 facts share conformed dimensions; the 3 facts of the order flow are drawn with theirs.</p>
+    <div class="vis wide paper er2"><svg viewBox="0 0 1544 898" width="1544" height="898"><path class="rel" d="M622 109 C461 109 461 57 300 57"/><path class="rel" d="M622 135 C461 135 461 497 300 497"/><path class="rel" d="M922 161 C1083 161 1083 57 1244 57"/><path class="rel" d="M622 187 C461 187 461 307 300 307"/><path class="rel" d="M922 213 C1083 213 1083 287 1244 287"/><path class="rel" d="M622 469 C461 469 461 57 300 57"/><path class="rel" d="M922 495 C1083 495 1083 417 1244 417"/><path class="rel" d="M622 521 C461 521 461 307 300 307"/><path class="rel" d="M622 765 C461 765 461 57 300 57"/><path class="rel" d="M922 791 C1083 791 1083 577 1244 577"/><path class="rel" d="M922 817 C1083 817 1083 57 1244 57"/><g class="ent dim"><rect x="0" y="0" width="300" height="210"/><rect class="bar" x="0" y="0" width="4" height="210" style="fill:#ffd23f"/><text class="nm" x="20" y="29">dim_date</text><line class="sep" x1="0" y1="42" x2="300" y2="42"/><text class="colname key" x="20" y="62">date_key</text><text class="kk" x="284" y="62" text-anchor="end">PK</text><text class="colname" x="20" y="88">day</text><text class="colname" x="20" y="114">week</text><text class="colname" x="20" y="140">month</text><text class="colname" x="20" y="166">quarter</text><text class="colname" x="20" y="192">trading_day</text></g><g class="ent dim"><rect x="0" y="250" width="300" height="158"/><rect class="bar" x="0" y="250" width="4" height="158" style="fill:#ffd23f"/><text class="nm" x="20" y="279">dim_countries</text><line class="sep" x1="0" y1="292" x2="300" y2="292"/><text class="colname key" x="20" y="312">country_key</text><text class="kk" x="284" y="312" text-anchor="end">PK</text><text class="colname" x="20" y="338">name</text><text class="colname" x="20" y="364">region</text><text class="colname" x="20" y="390">currency</text></g><g class="ent dim"><rect x="0" y="440" width="300" height="184"/><rect class="bar" x="0" y="440" width="4" height="184" style="fill:#ffd23f"/><text class="nm" x="20" y="469">dim_customers</text><line class="sep" x1="0" y1="482" x2="300" y2="482"/><text class="colname key" x="20" y="502">customer_key</text><text class="kk" x="284" y="502" text-anchor="end">PK</text><text class="colname" x="20" y="528">country</text><text class="colname" x="20" y="554">segment</text><text class="colname" x="20" y="580">first_order_on</text><text class="colname" x="20" y="606">account_type</text></g><g class="ent fact"><rect x="622" y="0" width="300" height="340"/><rect class="bar" x="622" y="0" width="4" height="340" style="fill:#ffd23f"/><text class="nm" x="642" y="29">fact_order_lines</text><line class="sep" x1="622" y1="42" x2="922" y2="42"/><text class="colname key" x="642" y="62">order_id</text><text class="kk" x="906" y="62" text-anchor="end">PK</text><text class="colname key" x="642" y="88">line_no</text><text class="kk" x="906" y="88" text-anchor="end">PK</text><text class="colname" x="642" y="114">date_key</text><text class="kk" x="906" y="114" text-anchor="end">FK</text><text class="colname" x="642" y="140">customer_key</text><text class="kk" x="906" y="140" text-anchor="end">FK</text><text class="colname" x="642" y="166">product_key</text><text class="kk" x="906" y="166" text-anchor="end">FK</text><text class="colname" x="642" y="192">country_key</text><text class="kk" x="906" y="192" text-anchor="end">FK</text><text class="colname" x="642" y="218">channel_key</text><text class="kk" x="906" y="218" text-anchor="end">FK</text><text class="colname" x="642" y="244">quantity</text><text class="colname" x="642" y="270">net_eur</text><text class="colname" x="642" y="296">discount_eur</text><text class="colname" x="642" y="322">margin_eur</text></g><g class="ent fact"><rect x="622" y="360" width="300" height="262"/><rect class="bar" x="622" y="360" width="4" height="262" style="fill:#ffd23f"/><text class="nm" x="642" y="389">fact_shipments</text><line class="sep" x1="622" y1="402" x2="922" y2="402"/><text class="colname key" x="642" y="422">shipment_id</text><text class="kk" x="906" y="422" text-anchor="end">PK</text><text class="colname" x="642" y="448">order_id</text><text class="kk" x="906" y="448" text-anchor="end">FK</text><text class="colname" x="642" y="474">date_key</text><text class="kk" x="906" y="474" text-anchor="end">FK</text><text class="colname" x="642" y="500">carrier_key</text><text class="kk" x="906" y="500" text-anchor="end">FK</text><text class="colname" x="642" y="526">country_key</text><text class="kk" x="906" y="526" text-anchor="end">FK</text><text class="colname" x="642" y="552">promised_days</text><text class="colname" x="642" y="578">actual_days</text><text class="colname" x="642" y="604">on_time</text></g><g class="ent fact"><rect x="622" y="630" width="300" height="262"/><rect class="bar" x="622" y="630" width="4" height="262" style="fill:#ffd23f"/><text class="nm" x="642" y="659">fact_returns</text><line class="sep" x1="622" y1="672" x2="922" y2="672"/><text class="colname key" x="642" y="692">return_id</text><text class="kk" x="906" y="692" text-anchor="end">PK</text><text class="colname" x="642" y="718">order_id</text><text class="kk" x="906" y="718" text-anchor="end">FK</text><text class="colname" x="642" y="744">line_no</text><text class="kk" x="906" y="744" text-anchor="end">FK</text><text class="colname" x="642" y="770">date_key</text><text class="kk" x="906" y="770" text-anchor="end">FK</text><text class="colname" x="642" y="796">reason_key</text><text class="kk" x="906" y="796" text-anchor="end">FK</text><text class="colname" x="642" y="822">product_key</text><text class="kk" x="906" y="822" text-anchor="end">FK</text><text class="colname" x="642" y="848">quantity</text><text class="colname" x="642" y="874">refund_eur</text></g><g class="ent dim"><rect x="1244" y="0" width="300" height="184"/><rect class="bar" x="1244" y="0" width="4" height="184" style="fill:#ffd23f"/><text class="nm" x="1264" y="29">dim_products</text><line class="sep" x1="1244" y1="42" x2="1544" y2="42"/><text class="colname key" x="1264" y="62">product_key</text><text class="kk" x="1528" y="62" text-anchor="end">PK</text><text class="colname" x="1264" y="88">family</text><text class="colname" x="1264" y="114">model</text><text class="colname" x="1264" y="140">list_price_eur</text><text class="colname" x="1264" y="166">active</text></g><g class="ent dim"><rect x="1244" y="230" width="300" height="106"/><rect class="bar" x="1244" y="230" width="4" height="106" style="fill:#ffd23f"/><text class="nm" x="1264" y="259">dim_channels</text><line class="sep" x1="1244" y1="272" x2="1544" y2="272"/><text class="colname key" x="1264" y="292">channel_key</text><text class="kk" x="1528" y="292" text-anchor="end">PK</text><text class="colname" x="1264" y="318">name</text></g><g class="ent dim"><rect x="1244" y="360" width="300" height="132"/><rect class="bar" x="1244" y="360" width="4" height="132" style="fill:#ffd23f"/><text class="nm" x="1264" y="389">dim_carriers</text><line class="sep" x1="1244" y1="402" x2="1544" y2="402"/><text class="colname key" x="1264" y="422">carrier_key</text><text class="kk" x="1528" y="422" text-anchor="end">PK</text><text class="colname" x="1264" y="448">name</text><text class="colname" x="1264" y="474">country</text></g><g class="ent dim"><rect x="1244" y="520" width="300" height="132"/><rect class="bar" x="1244" y="520" width="4" height="132" style="fill:#ffd23f"/><text class="nm" x="1264" y="549">dim_return_reasons</text><line class="sep" x1="1244" y1="562" x2="1544" y2="562"/><text class="colname key" x="1264" y="582">reason_key</text><text class="kk" x="1528" y="582" text-anchor="end">PK</text><text class="colname" x="1264" y="608">reason</text><text class="colname" x="1264" y="634">group</text></g></svg></div>
+  </section>
+  <section class="s">
+    <h2>The core tables</h2>
+    <p class="one">12 tables in <span class="id">silver_core</span>, money in cents, timestamps in UTC; net is after discounts, margin is net minus standard cost.</p>
+    <div class="vis"><table class="t fixed"><colgroup><col style="width:200px"><col style="width:300px"><col style="width:240px"><col></colgroup><tr><th class="w200">Core table</th><th class="w300">Grain</th><th class="w240">Key</th><th class="">Built from</th></tr><tr><td class="m col"><span class="id">customers</span></td><td class="dim">one row per customer</td><td class="m"><span class="id">customer_id</span></td><td class="wrap"><span class="id">customers</span>, <span class="id">contacts</span>, <span class="id">account_members</span>, <span class="id">business_accounts</span></td></tr><tr><td class="m col"><span class="id">orders</span></td><td class="dim">one row per order</td><td class="m"><span class="id">order_id</span></td><td class="wrap"><span class="id">orders</span>, <span class="id">order_status_history</span>, <span class="id">codes</span></td></tr><tr><td class="m col"><span class="id">order_lines</span></td><td class="dim">one row per order line</td><td class="m"><span class="id">order_id</span>, <span class="id">line_no</span></td><td class="wrap"><span class="id">order_lines</span>, <span class="id">discount_components</span>, <span class="id">returns</span></td></tr><tr><td class="m col"><span class="id">products</span></td><td class="dim">one row per product</td><td class="m"><span class="id">sku</span></td><td class="wrap"><span class="id">products</span>, <span class="id">sku_offers</span>, <span class="id">listing_versions</span></td></tr><tr><td class="m col"><span class="id">product_prices</span></td><td class="dim">one row per price change</td><td class="m"><span class="id">sku</span>, <span class="id">effective_from</span></td><td class="wrap"><span class="id">prices</span>, <span class="id">standard_costs</span></td></tr><tr><td class="m col"><span class="id">shipments</span></td><td class="dim">one row per shipment</td><td class="m"><span class="id">shipment_id</span></td><td class="wrap"><span class="id">shipments</span>, <span class="id">shipping_ledger</span></td></tr><tr><td class="m col"><span class="id">returns</span></td><td class="dim">one row per returned line</td><td class="m"><span class="id">return_id</span></td><td class="wrap"><span class="id">returns</span>, <span class="id">return_cases</span>, <span class="id">refund_ledger</span>, <span class="id">recovery_ledger</span></td></tr><tr><td class="m col"><span class="id">suppliers</span></td><td class="dim">one row per supplier</td><td class="m"><span class="id">supplier_id</span></td><td class="wrap"><span class="id">suppliers</span>, <span class="id">supplier_invoice_lines</span></td></tr><tr><td class="m col"><span class="id">purchase_orders</span></td><td class="dim">one row per purchase order</td><td class="m"><span class="id">po_id</span></td><td class="wrap"><span class="id">purchase_orders</span>, <span class="id">receipts</span></td></tr><tr><td class="m col"><span class="id">campaigns</span></td><td class="dim">one row per campaign</td><td class="m"><span class="id">campaign_id</span></td><td class="wrap"><span class="id">campaigns</span>, <span class="id">marketing_spend</span>, <span class="id">voucher_offers</span></td></tr><tr><td class="m col"><span class="id">stock</span></td><td class="dim">one row per product and day</td><td class="m"><span class="id">sku</span>, <span class="id">day</span></td><td class="wrap"><span class="id">stock_daily</span>, <span class="id">stock_movements</span>, <span class="id">stock_counts</span>, <span class="id">stock</span></td></tr><tr><td class="m col"><span class="id">tickets</span></td><td class="dim">one row per support ticket</td><td class="m"><span class="id">ticket_id</span></td><td class="wrap"><span class="id">tickets</span>, <span class="id">messages</span>, <span class="id">support_agents</span></td></tr></table></div>
+  </section>
+  <section class="s">
+    <h2>The clean tables and their keys</h2>
+    <p class="one">41 tables in <span class="id">silver_clean</span> with their keys and the 50 foreign keys of the data contracts; dashed crosses a source.</p>
+    <div class="vis wide paper"><div class="lin lin2"><svg viewBox="0 0 1544 1022" width="1544" height="1022"><rect class="lane" x="-12.0" y="2" width="454.0" height="970" rx="12"/><rect class="lane" x="545.0" y="2" width="454.0" height="1020" rx="12"/><rect class="lane" x="1102.0" y="2" width="454.0" height="570" rx="12"/><g class="wire same" data-a="account_members" data-b="business_accounts"><path d="M432.0 703.0 C441.0 703.0 441.0 653.0 432.0 653.0"/></g><g class="wire dim" data-a="contacts" data-b="customers"><path d="M430.0 803.0 C493.5 803.0 493.5 403.0 557.0 403.0"/></g><g class="wire dim" data-a="customers" data-b="business_accounts"><path d="M557.0 403.0 C493.5 403.0 493.5 653.0 430.0 653.0"/></g><g class="wire same" data-a="discount_components" data-b="order_lines"><path d="M989.0 503.0 C998.0 503.0 998.0 653.0 989.0 653.0"/></g><g class="wire dim same" data-a="discount_components" data-b="sku_offers"><path d="M989.0 503.0 C998.0 503.0 998.0 121.0 989.0 121.0"/></g><g class="wire dim" data-a="discount_components" data-b="voucher_offers"><path d="M557.0 503.0 C493.5 503.0 493.5 753.0 430.0 753.0"/></g><g class="wire same" data-a="listing_versions" data-b="products"><path d="M989.0 171.0 C998.0 171.0 998.0 271.0 989.0 271.0"/></g><g class="wire dim same" data-a="marketing_spend" data-b="campaigns"><path d="M432.0 271.0 C441.0 271.0 441.0 885.0 432.0 885.0"/></g><g class="wire dim" data-a="marketplace_fee_postings" data-b="orders"><path d="M430.0 321.0 C493.5 321.0 493.5 453.0 557.0 453.0"/></g><g class="wire dim" data-a="marketplace_fee_postings" data-b="returns"><path d="M430.0 321.0 C493.5 321.0 493.5 603.0 557.0 603.0"/></g><g class="wire same" data-a="messages" data-b="support_agents"><path d="M1112.0 221.0 C1103.0 221.0 1103.0 121.0 1112.0 121.0"/></g><g class="wire same" data-a="messages" data-b="tickets"><path d="M1112.0 221.0 C1103.0 221.0 1103.0 171.0 1112.0 171.0"/></g><g class="wire same" data-a="order_lines" data-b="orders"><path d="M989.0 653.0 C998.0 653.0 998.0 453.0 989.0 453.0"/></g><g class="wire dim same" data-a="order_lines" data-b="products"><path d="M989.0 653.0 C998.0 653.0 998.0 271.0 989.0 271.0"/></g><g class="wire same" data-a="order_status_history" data-b="orders"><path d="M989.0 703.0 C998.0 703.0 998.0 453.0 989.0 453.0"/></g><g class="wire dim" data-a="orders" data-b="business_accounts"><path d="M557.0 453.0 C493.5 453.0 493.5 653.0 430.0 653.0"/></g><g class="wire dim" data-a="orders" data-b="campaigns"><path d="M557.0 453.0 C493.5 453.0 493.5 885.0 430.0 885.0"/></g><g class="wire same" data-a="orders" data-b="customers"><path d="M989.0 453.0 C998.0 453.0 998.0 403.0 989.0 403.0"/></g><g class="wire same" data-a="prices" data-b="products"><path d="M989.0 221.0 C998.0 221.0 998.0 271.0 989.0 271.0"/></g><g class="wire dim" data-a="products" data-b="suppliers"><path d="M987.0 271.0 C1050.5 271.0 1050.5 385.0 1114.0 385.0"/></g><g class="wire dim" data-a="purchase_orders" data-b="products"><path d="M1114.0 435.0 C1050.5 435.0 1050.5 271.0 987.0 271.0"/></g><g class="wire same" data-a="purchase_orders" data-b="suppliers"><path d="M1112.0 435.0 C1103.0 435.0 1103.0 385.0 1112.0 385.0"/></g><g class="wire same" data-a="receipts" data-b="purchase_orders"><path d="M1112.0 485.0 C1103.0 485.0 1103.0 435.0 1112.0 435.0"/></g><g class="wire dim" data-a="recovery_ledger" data-b="returns"><path d="M430.0 521.0 C493.5 521.0 493.5 603.0 557.0 603.0"/></g><g class="wire dim" data-a="refund_ledger" data-b="orders"><path d="M430.0 371.0 C493.5 371.0 493.5 453.0 557.0 453.0"/></g><g class="wire dim" data-a="refund_ledger" data-b="returns"><path d="M430.0 371.0 C493.5 371.0 493.5 603.0 557.0 603.0"/></g><g class="wire same" data-a="return_cases" data-b="order_lines"><path d="M989.0 553.0 C998.0 553.0 998.0 653.0 989.0 653.0"/></g><g class="wire same" data-a="return_cases" data-b="returns"><path d="M989.0 553.0 C998.0 553.0 998.0 603.0 989.0 603.0"/></g><g class="wire same" data-a="returns" data-b="order_lines"><path d="M989.0 603.0 C998.0 603.0 998.0 653.0 989.0 653.0"/></g><g class="wire dim same" data-a="shipments" data-b="orders"><path d="M989.0 785.0 C998.0 785.0 998.0 453.0 989.0 453.0"/></g><g class="wire dim" data-a="shipping_ledger" data-b="shipments"><path d="M430.0 571.0 C493.5 571.0 493.5 785.0 557.0 785.0"/></g><g class="wire dim" data-a="sku_offers" data-b="campaigns"><path d="M557.0 121.0 C493.5 121.0 493.5 885.0 430.0 885.0"/></g><g class="wire same" data-a="sku_offers" data-b="products"><path d="M989.0 121.0 C998.0 121.0 998.0 271.0 989.0 271.0"/></g><g class="wire dim" data-a="standard_costs" data-b="products"><path d="M430.0 421.0 C493.5 421.0 493.5 271.0 557.0 271.0"/></g><g class="wire dim same" data-a="stock" data-b="products"><path d="M989.0 835.0 C998.0 835.0 998.0 271.0 989.0 271.0"/></g><g class="wire dim same" data-a="stock_counts" data-b="products"><path d="M989.0 885.0 C998.0 885.0 998.0 271.0 989.0 271.0"/></g><g class="wire same" data-a="stock_counts" data-b="stock_movements"><path d="M989.0 885.0 C998.0 885.0 998.0 985.0 989.0 985.0"/></g><g class="wire dim same" data-a="stock_daily" data-b="products"><path d="M989.0 935.0 C998.0 935.0 998.0 271.0 989.0 271.0"/></g><g class="wire dim" data-a="stock_exits" data-b="products"><path d="M430.0 471.0 C493.5 471.0 493.5 271.0 557.0 271.0"/></g><g class="wire dim" data-a="stock_exits" data-b="stock_movements"><path d="M430.0 471.0 C493.5 471.0 493.5 985.0 557.0 985.0"/></g><g class="wire dim same" data-a="stock_movements" data-b="products"><path d="M989.0 985.0 C998.0 985.0 998.0 271.0 989.0 271.0"/></g><g class="wire same" data-a="supplier_invoice_lines" data-b="purchase_orders"><path d="M1112.0 535.0 C1103.0 535.0 1103.0 435.0 1112.0 435.0"/></g><g class="wire same" data-a="supplier_invoice_lines" data-b="receipts"><path d="M1112.0 535.0 C1103.0 535.0 1103.0 485.0 1112.0 485.0"/></g><g class="wire dim" data-a="tickets" data-b="customers"><path d="M1114.0 171.0 C1050.5 171.0 1050.5 403.0 987.0 403.0"/></g><g class="wire dim" data-a="tickets" data-b="orders"><path d="M1114.0 171.0 C1050.5 171.0 1050.5 453.0 987.0 453.0"/></g><g class="wire dim same" data-a="voucher_offers" data-b="campaigns"><path d="M432.0 753.0 C441.0 753.0 441.0 885.0 432.0 885.0"/></g><g class="wire dim" data-a="voucher_offers" data-b="customers"><path d="M430.0 753.0 C493.5 753.0 493.5 403.0 557.0 403.0"/></g><g class="wire dim" data-a="web_events" data-b="customers"><path d="M1114.0 303.0 C1050.5 303.0 1050.5 403.0 987.0 403.0"/></g><g class="wire dim" data-a="web_events" data-b="orders"><path d="M1114.0 303.0 C1050.5 303.0 1050.5 453.0 987.0 453.0"/></g><g class="wire dim" data-a="web_events" data-b="products"><path d="M1114.0 303.0 C1050.5 303.0 1050.5 271.0 987.0 271.0"/></g><text class="hd" x="0.0" y="22">finance, crm, marketing</text><text class="hd2" x="0.0" y="46">16 tables</text><text class="grp" x="0.0" y="84.0">finance</text><g class="node " data-k="marketplace_fee_rates"><rect x="0.0" y="99.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="99.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="118.0">marketplace_fee_rates</text><text class="sub2" x="14.0" y="138.0">country, effective_from</text></g><g class="node " data-k="sales_targets"><rect x="0.0" y="149.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="149.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="168.0">sales_targets</text><text class="sub2" x="14.0" y="188.0">month, country</text></g><g class="node " data-k="target_versions"><rect x="0.0" y="199.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="199.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="218.0">target_versions</text><text class="sub2" x="14.0" y="238.0">version_id, month, country, channel</text></g><g class="node " data-k="marketing_spend"><rect x="0.0" y="249.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="249.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="268.0">marketing_spend</text><text class="sub2" x="14.0" y="288.0">spend_id</text></g><g class="node " data-k="marketplace_fee_postings"><rect x="0.0" y="299.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="299.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="318.0">marketplace_fee_postings</text><text class="sub2" x="14.0" y="338.0">posting_id</text></g><g class="node " data-k="refund_ledger"><rect x="0.0" y="349.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="349.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="368.0">refund_ledger</text><text class="sub2" x="14.0" y="388.0">refund_id</text></g><g class="node " data-k="standard_costs"><rect x="0.0" y="399.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="399.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="418.0">standard_costs</text><text class="sub2" x="14.0" y="438.0">sku, effective_from</text></g><g class="node " data-k="stock_exits"><rect x="0.0" y="449.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="449.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="468.0">stock_exits</text><text class="sub2" x="14.0" y="488.0">exit_id</text></g><g class="node " data-k="recovery_ledger"><rect x="0.0" y="499.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="499.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="518.0">recovery_ledger</text><text class="sub2" x="14.0" y="538.0">return_id</text></g><g class="node " data-k="shipping_ledger"><rect x="0.0" y="549.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="549.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="568.0">shipping_ledger</text><text class="sub2" x="14.0" y="588.0">shipment_id</text></g><text class="grp" x="0.0" y="616.0">crm</text><g class="node " data-k="business_accounts"><rect x="0.0" y="631.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="631.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="650.0">business_accounts</text><text class="sub2" x="14.0" y="670.0">account_id</text></g><g class="node " data-k="account_members"><rect x="0.0" y="681.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="681.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="700.0">account_members</text><text class="sub2" x="14.0" y="720.0">user_id</text></g><g class="node " data-k="voucher_offers"><rect x="0.0" y="731.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="731.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="750.0">voucher_offers</text><text class="sub2" x="14.0" y="770.0">offer_id</text></g><g class="node " data-k="contacts"><rect x="0.0" y="781.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="781.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="800.0">contacts</text><text class="sub2" x="14.0" y="820.0">customer_id, effective_from</text></g><text class="grp" x="0.0" y="848.0">marketing</text><g class="node " data-k="campaigns"><rect x="0.0" y="863.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="863.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="882.0">campaigns</text><text class="sub2" x="14.0" y="902.0">campaign_id</text></g><g class="node " data-k="trading_calendar"><rect x="0.0" y="913.0" width="430.0" height="44"/><rect class="bar" x="0.0" y="913.0" width="4" height="44" style="fill:#c9b8ff"/><text x="14.0" y="932.0">trading_calendar</text><text class="sub2" x="14.0" y="952.0">day</text></g><text class="hd" x="557.0" y="22">catalog, commerce, warehouse</text><text class="hd2" x="557.0" y="46">17 tables</text><text class="grp" x="557.0" y="84.0">catalog</text><g class="node " data-k="sku_offers"><rect x="557.0" y="99.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="99.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="118.0">sku_offers</text><text class="sub2" x="571.0" y="138.0">offer_id</text></g><g class="node " data-k="listing_versions"><rect x="557.0" y="149.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="149.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="168.0">listing_versions</text><text class="sub2" x="571.0" y="188.0">sku, country, effective_from</text></g><g class="node " data-k="prices"><rect x="557.0" y="199.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="199.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="218.0">prices</text><text class="sub2" x="571.0" y="238.0">sku, effective_from</text></g><g class="node " data-k="products"><rect x="557.0" y="249.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="249.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="268.0">products</text><text class="sub2" x="571.0" y="288.0">sku</text></g><text class="grp" x="557.0" y="316.0">commerce</text><g class="node " data-k="codes"><rect x="557.0" y="331.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="331.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="350.0">codes</text><text class="sub2" x="571.0" y="370.0">domain, code</text></g><g class="node " data-k="customers"><rect x="557.0" y="381.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="381.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="400.0">customers</text><text class="sub2" x="571.0" y="420.0">customer_id</text></g><g class="node " data-k="orders"><rect x="557.0" y="431.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="431.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="450.0">orders</text><text class="sub2" x="571.0" y="470.0">order_id</text></g><g class="node " data-k="discount_components"><rect x="557.0" y="481.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="481.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="500.0">discount_components</text><text class="sub2" x="571.0" y="520.0">line_id, component</text></g><g class="node " data-k="return_cases"><rect x="557.0" y="531.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="531.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="550.0">return_cases</text><text class="sub2" x="571.0" y="570.0">case_id</text></g><g class="node " data-k="returns"><rect x="557.0" y="581.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="581.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="600.0">returns</text><text class="sub2" x="571.0" y="620.0">return_id</text></g><g class="node " data-k="order_lines"><rect x="557.0" y="631.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="631.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="650.0">order_lines</text><text class="sub2" x="571.0" y="670.0">line_id</text></g><g class="node " data-k="order_status_history"><rect x="557.0" y="681.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="681.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="700.0">order_status_history</text><text class="sub2" x="571.0" y="720.0">event_id</text></g><text class="grp" x="557.0" y="748.0">warehouse</text><g class="node " data-k="shipments"><rect x="557.0" y="763.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="763.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="782.0">shipments</text><text class="sub2" x="571.0" y="802.0">shipment_id</text></g><g class="node " data-k="stock"><rect x="557.0" y="813.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="813.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="832.0">stock</text><text class="sub2" x="571.0" y="852.0">sku, month_end</text></g><g class="node " data-k="stock_counts"><rect x="557.0" y="863.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="863.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="882.0">stock_counts</text><text class="sub2" x="571.0" y="902.0">count_id</text></g><g class="node " data-k="stock_daily"><rect x="557.0" y="913.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="913.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="932.0">stock_daily</text><text class="sub2" x="571.0" y="952.0">sku, day</text></g><g class="node " data-k="stock_movements"><rect x="557.0" y="963.0" width="430.0" height="44"/><rect class="bar" x="557.0" y="963.0" width="4" height="44" style="fill:#c9b8ff"/><text x="571.0" y="982.0">stock_movements</text><text class="sub2" x="571.0" y="1002.0">movement_id</text></g><text class="hd" x="1114.0" y="22">support, web, purchasing</text><text class="hd2" x="1114.0" y="46">8 tables</text><text class="grp" x="1114.0" y="84.0">support</text><g class="node " data-k="support_agents"><rect x="1114.0" y="99.0" width="430.0" height="44"/><rect class="bar" x="1114.0" y="99.0" width="4" height="44" style="fill:#c9b8ff"/><text x="1128.0" y="118.0">support_agents</text><text class="sub2" x="1128.0" y="138.0">agent_id</text></g><g class="node " data-k="tickets"><rect x="1114.0" y="149.0" width="430.0" height="44"/><rect class="bar" x="1114.0" y="149.0" width="4" height="44" style="fill:#c9b8ff"/><text x="1128.0" y="168.0">tickets</text><text class="sub2" x="1128.0" y="188.0">ticket_id</text></g><g class="node " data-k="messages"><rect x="1114.0" y="199.0" width="430.0" height="44"/><rect class="bar" x="1114.0" y="199.0" width="4" height="44" style="fill:#c9b8ff"/><text x="1128.0" y="218.0">messages</text><text class="sub2" x="1128.0" y="238.0">message_id</text></g><text class="grp" x="1114.0" y="266.0">web</text><g class="node " data-k="web_events"><rect x="1114.0" y="281.0" width="430.0" height="44"/><rect class="bar" x="1114.0" y="281.0" width="4" height="44" style="fill:#c9b8ff"/><text x="1128.0" y="300.0">web_events</text><text class="sub2" x="1128.0" y="320.0">event_id</text></g><text class="grp" x="1114.0" y="348.0">purchasing</text><g class="node " data-k="suppliers"><rect x="1114.0" y="363.0" width="430.0" height="44"/><rect class="bar" x="1114.0" y="363.0" width="4" height="44" style="fill:#c9b8ff"/><text x="1128.0" y="382.0">suppliers</text><text class="sub2" x="1128.0" y="402.0">supplier_id</text></g><g class="node " data-k="purchase_orders"><rect x="1114.0" y="413.0" width="430.0" height="44"/><rect class="bar" x="1114.0" y="413.0" width="4" height="44" style="fill:#c9b8ff"/><text x="1128.0" y="432.0">purchase_orders</text><text class="sub2" x="1128.0" y="452.0">po_id</text></g><g class="node " data-k="receipts"><rect x="1114.0" y="463.0" width="430.0" height="44"/><rect class="bar" x="1114.0" y="463.0" width="4" height="44" style="fill:#c9b8ff"/><text x="1128.0" y="482.0">receipts</text><text class="sub2" x="1128.0" y="502.0">receipt_id</text></g><g class="node " data-k="supplier_invoice_lines"><rect x="1114.0" y="513.0" width="430.0" height="44"/><rect class="bar" x="1114.0" y="513.0" width="4" height="44" style="fill:#c9b8ff"/><text x="1128.0" y="532.0">supplier_invoice_lines</text><text class="sub2" x="1128.0" y="552.0">invoice_line_id</text></g></svg></div></div>
+  </section>
+</main>
+<script>
+  (function () {
+    document.querySelectorAll('.lin').forEach(function (root) {
+      var nodes = Array.prototype.slice.call(root.querySelectorAll('.node'));
+      var wires = Array.prototype.slice.call(root.querySelectorAll('.wire'));
+      var up = {}, down = {};
+      wires.forEach(function (w) { var a = w.dataset.a, b = w.dataset.b; (down[a] = down[a] || []).push(b); (up[b] = up[b] || []).push(a); });
+      function walk(start, map) { var seen = {}, stack = [start]; while (stack.length) { var k = stack.pop(); (map[k] || []).forEach(function (n) { if (!seen[n]) { seen[n] = true; stack.push(n); } }); } return seen; }
+      function clear() { nodes.forEach(function (n) { n.classList.remove('on', 'up', 'down', 'off'); }); wires.forEach(function (w) { w.classList.remove('up', 'down', 'off'); }); }
+      nodes.forEach(function (n) { n.addEventListener('click', function (ev) {
+        ev.stopPropagation(); clear(); var k = n.dataset.k, u = walk(k, up), d = walk(k, down);
+        nodes.forEach(function (o) { var ok = o.dataset.k; o.classList.add(ok === k ? 'on' : u[ok] ? 'up' : d[ok] ? 'down' : 'off'); });
+        wires.forEach(function (w) { var a = w.dataset.a, b = w.dataset.b; w.classList.add((u[a] || a === k) && (u[b] || b === k) ? 'up' : (d[a] || a === k) && (d[b] || b === k) ? 'down' : 'off'); });
+      }); });
+      document.addEventListener('click', clear); document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') clear(); });
+      var h = decodeURIComponent(location.hash.slice(1)), hits = h ? nodes.filter(function (n) { return n.dataset.k.split(':').pop() === h; }) : [], n0 = hits[hits.length - 1];
+      if (n0 && !root.dataset.lit) { root.dataset.lit = '1'; n0.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true})); }
+    });
+  })();</script>
+</body>
+</html>

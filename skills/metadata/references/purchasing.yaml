@@ -1,0 +1,81 @@
+# The metadata of the source purchasing: the format the metadata skill follows.
+# An example: 3 of its 10 tables, with their main columns.
+# Names and types come from the data with a script. Descriptions come from the documents,
+# and a description stays empty where the documents say nothing.
+# A fictional company and fictional data.
+
+source: purchasing
+tables:
+
+  - name: purchase_orders
+    description: One purchase order, the header. Its lines are in purchase_order_lines.
+    columns:
+      - name: po_id
+        type: string
+        key: true
+        description: The purchase order number.
+      - name: supplier_id
+        type: string
+        description: The supplier the order went to, 8 digits with leading zeros.
+      - name: order_date
+        type: date
+        description: The day the order was placed.
+      - name: currency
+        type: string
+        description: The currency of the order, EUR, USD, GBP or CHF.
+      - name: updated_at
+        type: timestamp
+        description: When the source wrote the row, in UTC. The extract time, not a change date.
+
+  - name: purchase_order_lines
+    description: One line of a purchase order, one material.
+    columns:
+      - name: po_id
+        type: string
+        key: true
+        description: The purchase order the line belongs to.
+      - name: line_no
+        type: integer
+        key: true
+        description: The number of the line within the order.
+      - name: material_no
+        type: string
+        description: The material that was ordered.
+      - name: quantity
+        type: integer
+        description: The ordered units.
+      - name: net_amount
+        type: decimal
+        description: The net amount of the line, in the currency of the order.
+      - name: plant
+        type: string
+        description: The plant the line is delivered to.
+      - name: deletion_flag
+        type: string
+        description: L when the line was deleted in the source, S when it is blocked, empty otherwise.
+      - name: updated_at
+        type: timestamp
+        description: When the source wrote the row, in UTC. The extract time, not a change date.
+
+  - name: suppliers
+    description: One supplier.
+    columns:
+      - name: supplier_id
+        type: string
+        key: true
+        description: The supplier number, 8 digits with leading zeros.
+      - name: supplier_name
+        type: string
+        description: The name of the supplier, as on the contract.
+      - name: country
+        type: string
+        description: The country of the supplier, as an ISO 3166-1 alpha-2 code.
+      - name: tax_id
+        type: string
+        description: The tax number of the supplier. Restricted.
+      - name: iban
+        type: string
+        description: The bank account of the supplier. Bank data, restricted.
+      - name: payment_terms_days
+        type: integer
+        description: ""

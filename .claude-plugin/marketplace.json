@@ -1,0 +1,14 @@
+{
+  "name": "data-with-baraa",
+  "description": "Skills from the Data With Baraa channel.",
+  "owner": {
+    "name": "Data With Baraa"
+  },
+  "plugins": [
+    {
+      "name": "data-engineering",
+      "source": "./",
+      "description": "16 Claude Code skills for data engineers: profile, contract, metadata, incident, quality, reconcile, impact, toolkit, data product, docs, pull request review, big review, cost review, test data, knowledge refresh and migration."
+    }
+  ]
+}

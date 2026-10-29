@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Review · feat/month-end-summary</title>
+<style>
+@font-face{font-family:'Bricolage Grotesque';font-weight:600;font-display:block;src:url('fonts/BricolageGrotesque-600.woff2') format('woff2');}
+@font-face{font-family:'Bricolage Grotesque';font-weight:700;font-display:block;src:url('fonts/BricolageGrotesque-700.woff2') format('woff2');}
+@font-face{font-family:'Bricolage Grotesque';font-weight:800;font-display:block;src:url('fonts/BricolageGrotesque-800.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-weight:500;font-display:block;src:url('fonts/JetBrainsMono-500.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-weight:600;font-display:block;src:url('fonts/JetBrainsMono-600.woff2') format('woff2');}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0f0a1e;--ink:#ece7f8;--ink-2:rgba(236,231,248,.7);--ink-3:rgba(236,231,248,.55);--ink-4:rgba(236,231,248,.4);--line:rgba(236,231,248,.14);--purple:#8a63f2;--purple-soft:#c9b8ff;--red:#ff8a73;--orange:#ffa657;--green:#5fe3a1;
+  --gh-bg:#0d1117;--gh-head:#161b22;--gh-line:#30363d;--gh-text:#e6edf3;--gh-kw:#ff7b72;--gh-str:#a5d6ff;--gh-fn:#d2a8ff;--gh-num:#79c0ff;--gh-cm:#8b949e;--gh-gutter:#6e7681;--gh-del:rgba(255,138,115,.18);--gh-add:rgba(63,185,80,.18);--gh-delink:#ffa198;--gh-addink:#7ee787;}
+html{background:var(--bg);}
+body{font-family:'Bricolage Grotesque',sans-serif;color:var(--ink);background:var(--bg);font-size:20px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+main{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:56px 40px 96px;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.nowrap{white-space:nowrap;}
+a{color:var(--purple-soft);text-decoration:none;}
+button{font:inherit;color:inherit;background:transparent;border:0;}
+.pill{display:inline-flex;align-items:center;padding:4px 9px;line-height:1;border-radius:6px;border:1px solid rgba(201,184,255,.45);font-family:'JetBrains Mono',monospace;font-weight:500;font-size:18px;letter-spacing:0;text-transform:none;color:var(--purple-soft);white-space:nowrap;}
+.pill.state{color:var(--red);border-color:rgba(255,138,115,.6);}
+.status{display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:17px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);}
+h1{margin-top:14px;font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1.05;}
+.strip{margin-top:26px;display:grid;grid-template-columns:1.3fr 1fr .9fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.cell{padding:16px 18px 16px 0;}
+.cell + .cell{border-left:1px solid var(--line);padding-left:18px;}
+.cell .l{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);}
+.cell .v{margin-top:6px;font-size:20px;font-weight:700;line-height:1.25;color:var(--ink);}
+.cell .v a{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:600;}
+.cell .v.sevs{display:flex;gap:18px;align-items:center;}
+.cell .v.sevs > span{display:inline-flex;align-items:center;gap:8px;font-size:20px;} .cell .v.sevs .high{color:var(--red);} .cell .v.sevs .medium{color:var(--orange);} .cell .v.sevs .low{color:var(--ink-2);}
+.meter{display:inline-flex;align-items:flex-end;gap:3px;height:22px;flex:none;}
+.meter i{display:block;width:6px;border-radius:2px;background:rgba(236,231,248,.16);}
+.meter i:nth-child(1){height:9px;} .meter i:nth-child(2){height:15px;} .meter i:nth-child(3){height:22px;}
+.meter.high i{background:var(--red);}
+.meter.medium i:nth-child(-n+2){background:var(--orange);}
+.meter.low i:nth-child(1){background:var(--green);}
+h2 .meter{height:26px;gap:4px;} h2 .meter i{width:7px;} h2 .meter i:nth-child(1){height:11px;} h2 .meter i:nth-child(2){height:18px;} h2 .meter i:nth-child(3){height:26px;}
+h2{margin-top:46px;font-size:28px;font-weight:700;letter-spacing:-.01em;line-height:1.1;padding-bottom:10px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;cursor:pointer;}
+h2 .count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:.1em;color:var(--ink-2);}
+h2 .chev{margin-right:4px;}
+.group.closed .list{display:none;}
+.item{border-bottom:1px solid var(--line);}
+.item .head{display:grid;grid-template-columns:28px minmax(0,1fr) 260px;align-items:center;column-gap:14px;padding:14px 0;cursor:pointer;}
+.item.small .head{cursor:default;}
+.item.small .chev{visibility:hidden;}
+.done{width:24px;height:24px;border-radius:7px;border:1.5px solid rgba(236,231,248,.45);cursor:pointer;position:relative;}
+.done:hover{border-color:var(--ink);}
+.item.is-done .done{background:var(--purple);border-color:var(--purple);}
+.item.is-done .done::after{content:'';position:absolute;left:8px;top:3px;width:6px;height:12px;border:solid var(--bg);border-width:0 2.5px 2.5px 0;transform:rotate(45deg);}
+.item.is-done .title{color:var(--ink-3);text-decoration:line-through;}
+.item .no{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:18px;color:var(--purple-soft);text-align:right;}
+.item .title{font-size:22px;font-weight:600;line-height:1.25;}
+.sev{display:inline-flex;align-items:center;gap:9px;justify-self:start;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:17px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap;}
+.chev{display:inline-block;width:24px;height:24px;cursor:pointer;position:relative;flex:none;}
+.chev::after{content:'';position:absolute;left:6px;top:4px;width:11px;height:11px;border:solid var(--ink-2);border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .2s;}
+.item.open .chev::after,.group:not(.closed) h2 .chev::after{transform:rotate(-135deg);top:10px;}
+.item .body{display:none;padding:2px 0 24px 42px;}
+.item.open .body{display:block;}
+.code,.fix{background:var(--gh-bg);border:1px solid var(--gh-line);border-radius:8px;padding:0 0 8px;font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-weight:500;font-size:18px;line-height:1.7;color:var(--gh-text);overflow-x:auto;}
+.cap a{color:var(--gh-cm);}
+.cap a:hover{color:var(--gh-text);text-decoration:underline;}
+.cap{font-size:18px;color:var(--gh-cm);padding:7px 14px;border-bottom:1px solid var(--gh-line);margin-bottom:6px;background:var(--gh-head);border-radius:8px 8px 0 0;}
+.ln,.fix .d{display:grid;grid-template-columns:56px minmax(0,1fr);}
+.ln .num,.fix .d .g{text-align:right;padding-right:16px;color:var(--gh-gutter);user-select:none;}
+.ln .src,.fix .d .t{white-space:pre-wrap;overflow-wrap:anywhere;padding-right:16px;padding-left:calc(var(--i,0)*1ch + 4ch);text-indent:calc(-1*(var(--i,0)*1ch + 4ch));}
+.ln.dots .src,.fix .d.dots .t{color:var(--gh-cm);font-style:italic;}
+.ln:has(mark){background:rgba(255,138,115,.06);} .ln:has(mark) .num{color:var(--red);}
+.kw{color:var(--gh-kw);} .st{color:var(--gh-str);} .fn{color:var(--gh-fn);} .nu{color:var(--gh-num);} .cm{color:var(--gh-cm);}
+mark{display:inline-block;text-indent:0;line-height:1.2;background:rgba(255,138,115,.22);color:inherit;border-radius:3px;padding:0 5px;margin:0 2px;box-shadow:0 0 0 1.5px rgba(255,138,115,.9);}
+.fix{margin-top:12px;padding-bottom:0;overflow:hidden;}
+.fix .cap{margin-bottom:0;}
+.fix .d.minus{background:var(--gh-del);} .fix .d.minus .g{color:var(--gh-delink);}
+.fix .d.plus{background:var(--gh-add);} .fix .d.plus .g{color:var(--gh-addink);}
+.comment{margin-top:14px;font-size:19px;line-height:1.5;color:var(--ink);max-width:1020px;text-wrap:pretty;}
+.comment .mono{font-size:.92em;}
+.comment .rule{display:block;margin-top:4px;color:var(--ink-2);}
+.comment .rule a{font-family:'JetBrains Mono',monospace;font-size:18px;margin-left:8px;}
+.thread{margin-top:22px;display:grid;row-gap:8px;}
+.msg{display:grid;grid-template-columns:170px minmax(0,1fr);column-gap:14px;align-items:baseline;}
+.msg .who{font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);}
+.msg .txt{font-size:19px;color:var(--ink);text-wrap:pretty;}
+
+/* the ground, from the insight series: a radial purple ground, a faint grid, plates with a purple edge */
+:root{--ground:#080513;--plate:linear-gradient(160deg,#1b1436 0%,#110c24 100%);--plate-border:rgba(138,99,242,.28);--red:#ff8a73;}
+html{background:var(--ground);}
+body{background:var(--ground);}
+body{position:relative;min-height:100%;}
+body::before{content:'';position:absolute;left:0;right:0;top:0;height:min(1600px,100%);z-index:0;pointer-events:none;
+  background:radial-gradient(1500px 900px at 50% 420px,#161033 0%,#0e0a1d 55%,rgba(8,5,19,0) 100%);}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(173,150,255,.05) 1.2px,transparent 1.2px),linear-gradient(90deg,rgba(173,150,255,.05) 1.2px,transparent 1.2px);
+  background-size:46px 46px;}
+main,nav{position:relative;z-index:1;}
+h2 .count{margin-left:0;font-family:inherit;font-size:inherit;letter-spacing:0;color:var(--ink-2);}
+</style>
+</head>
+<body>
+<main>
+  <div class="status">review <span class="pill">feat/month-end-summary</span><span class="pill state">changes requested</span></div>
+  <h1>Add the month-end summary for Finance</h1>
+  <div class="strip">
+    <div class="cell"><div class="l">File</div><div class="v"><a>run/lib/export_report.py</a></div></div>
+    <div class="cell"><div class="l">Diff</div><div class="v">+73 −0, 1 commit</div></div>
+    <div class="cell"><div class="l">Author</div><div class="v">Data Science</div></div>
+    <div class="cell"><div class="l">Findings</div><div class="v sevs"><span class="high">4 high</span><span class="medium">4 medium</span><span class="low">2 low</span></div></div>
+  </div>
+
+  <div class="group" id="high">
+    <h2 class="high">High risk<span class="count">· 4</span></h2>
+    <div class="list">
+    <div class="item open" data-key="token" data-cat="security">
+      <div class="head">
+        <span class="no">1</span>
+        <span class="title">Hardcoded access token</span>
+        <span class="sev high"><span class="cat">security</span></span>
+      </div>
+      <div class="body">
+        <div class="code"><div class="cap"><a>run/lib/export_report.py</a></div>
+          <div class="ln"><span class="num">9</span><span class="src" style="--i:0"><span class="kw">import</span> requests</span></div>
+          <div class="ln"><span class="num">10</span><span class="src" style="--i:0"></span></div>
+          <div class="ln"><span class="num">11</span><span class="src" style="--i:0">ACCESS_TOKEN = <mark><span class="st">&quot;nv_live_••••••••••••&quot;</span></mark></span></div>
+        </div>
+        <p class="comment">The token stays in the git history for everyone with read access, so rotate it. <span class="rule">§10: secrets are stored in .env, never in the code; .env is never committed. <a>standards.md:204</a></span></p>
+        <div class="fix"><div class="cap">Suggested change</div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:0"><span class="kw">import</span> os</span></div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:0">ACCESS_TOKEN = <span class="st">"nv_live_…"</span></span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:0">ACCESS_TOKEN = os.environ[<span class="st">"FINANCE_TOKEN"</span>]   <span class="cm"># from .env</span></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="item" data-key="float" data-cat="standards">
+      <div class="head">
+        <span class="no">2</span>
+        <span class="title">Money summed as floats</span>
+        <span class="sev high"><span class="cat">correctness</span></span>
+      </div>
+      <div class="body">
+        <div class="code"><div class="cap"><a>run/lib/export_report.py</a></div>
+          <div class="ln"><span class="num">40</span><span class="src" style="--i:4">    rows = con.<span class="fn">execute</span>(<span class="st">&quot;&quot;&quot;</span></span></div>
+          <div class="ln"><span class="num">41</span><span class="src" style="--i:8">        <span class="kw">SELECT</span> ship_country, <mark><span class="fn">sum</span>(net_eur)</mark> <span class="kw">AS</span> net_revenue_eur, <span class="fn">count</span>(<span class="kw">DISTINCT</span> order_id) <span class="kw">AS</span> orders</span></div>
+          <div class="ln"><span class="num">42</span><span class="src" style="--i:8">        <span class="kw">FROM</span> gold_marts.obt_order_lines</span></div>
+        </div>
+        <p class="comment">net_eur is a DOUBLE in gold, so net revenue for 2026-08 sums to 2287343.699999996 or 2287343.699999952 depending on row order. <span class="rule">§5: euros in gold are DECIMAL(18,2), never a float; a float sum depends on row order. <a>standards.md:73</a></span></p>
+        <div class="fix"><div class="cap">Suggested change</div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:8">        <span class="kw">SELECT</span> ship_country, <span class="fn">sum</span>(net_eur) <span class="kw">AS</span> net_revenue_eur, <span class="fn">count</span>(<span class="kw">DISTINCT</span> order_id) <span class="kw">AS</span> orders</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:8">        <span class="kw">SELECT</span> ship_country,</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:15">               <span class="fn">sum</span>(<span class="kw">CAST</span>(net_eur <span class="kw">AS</span> <span class="kw">DECIMAL</span>(18,2))) <span class="kw">AS</span> net_revenue_eur,</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:15">               <span class="fn">count</span>(<span class="kw">DISTINCT</span> order_id) <span class="kw">AS</span> orders</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="item" data-key="paths" data-cat="standards">
+      <div class="head">
+        <span class="no">3</span>
+        <span class="title">Hardcoded absolute paths</span>
+        <span class="sev high"><span class="cat">portability</span></span>
+      </div>
+      <div class="body">
+        <div class="code"><div class="cap"><a>run/lib/export_report.py</a></div>
+          <div class="ln"><span class="num">12</span><span class="src" style="--i:0">EXPORT_DIR = <span class="fn">Path</span>(<span class="st">&quot;<mark>/Users/datasci/code/newvolt-data-platform</mark>/data/export/2026-08-31&quot;</span>)</span></div>
+          <div class="ln"><span class="num">13</span><span class="src" style="--i:0">WAREHOUSE = <span class="fn">Path</span>(<span class="st">&quot;<mark>/Users/datasci/code/newvolt-data-platform</mark>/data/warehouse/newvolt.duckdb&quot;</span>)</span></div>
+        </div>
+        <p class="comment">Both paths start in the author's home directory, so the module runs only on that machine. <span class="rule">§9: paths are built from the repo root, never hardcoded. <a>standards.md:195</a></span></p>
+        <div class="fix"><div class="cap">Suggested change</div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:0">EXPORT_DIR = <span class="fn">Path</span>(<span class="st">"/Users/datasci/code/newvolt-data-platform/data/export/2026-08-31"</span>)</span></div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:0">WAREHOUSE = <span class="fn">Path</span>(<span class="st">"/Users/datasci/code/newvolt-data-platform/data/warehouse/newvolt.duckdb"</span>)</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:0"><span class="kw">from</span> run.lib <span class="kw">import</span> engine</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:0">EXPORT_DIR = engine.REPO / <span class="st">"data"</span> / <span class="st">"export"</span> / engine.LATEST_EXPORT</span></div>
+        </div>
+        <div class="thread">
+          <div class="msg"><span class="who">author · 09:14</span><span class="txt">The paths are fine; it only runs on my machine.</span></div>
+          <div class="msg"><span class="who">reviewer · 09:15</span><span class="txt">The finding stays high risk: once merged, it fails on every machine except yours.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="item" data-key="copy" data-cat="duplication">
+      <div class="head">
+        <span class="no">4</span>
+        <span class="title">Function already exists as readers.read_csv</span>
+        <span class="sev high"><span class="cat">duplication</span></span>
+      </div>
+      <div class="body">
+        <div class="code"><div class="cap"><a>run/lib/export_report.py</a></div>
+          <div class="ln"><span class="num">16</span><span class="src" style="--i:0"><span class="kw">def</span> <mark><span class="fn">load_csv_file</span></mark>(path: Path, columns: <span class="fn">list</span>[<span class="fn">str</span>], delimiter: <span class="fn">str</span> = <span class="st">&quot;,&quot;</span>, null_token: <span class="fn">str</span> = <span class="st">&quot;\\N&quot;</span>, encoding: <span class="fn">str</span> = <span class="st">&quot;utf-8&quot;</span>, label: <span class="fn">str</span> = <span class="st">&quot;&quot;</span>) -&gt; pd.DataFrame:</span></div>
+          <div class="ln"><span class="num">17</span><span class="src" style="--i:4">    <span class="st">&quot;&quot;&quot;Reads a delimited export file with a header line, every column as text.&quot;&quot;&quot;</span></span></div>
+          <div class="ln"><span class="num">18</span><span class="src" style="--i:4">    con = duckdb.<span class="fn">connect</span>()</span></div>
+          <div class="ln dots"><span class="num"></span><span class="src" style="--i:0">… 16 more lines</span></div>
+        </div>
+        <p class="comment">19 lines copied from readers.read_csv, and the copy has already drifted: it ignores its encoding argument, so a <span class="mono nowrap">utf-8-sig</span> file keeps its BOM. <span class="rule">§9: a function is written once and imported, never copied. <a>standards.md:198</a></span></p>
+        <div class="fix"><div class="cap">Suggested change</div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:0"><span class="kw">def</span> <span class="fn">load_csv_file</span>(path: Path, columns: list[str], delimiter: str = <span class="st">","</span>, null_token: str = <span class="st">"\\N"</span>, encoding: str = <span class="st">"utf-8"</span>, label: str = <span class="st">""</span>) -&gt; pd.DataFrame:</span></div>
+            <div class="d dots"><span class="g"></span><span class="t">… 18 more lines</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:0"><span class="kw">from</span> run.lib.readers <span class="kw">import</span> read_csv</span></div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="group closed" id="medium">
+    <h2 class="medium">Medium risk<span class="count">· 4</span></h2>
+    <div class="list">
+    <div class="item" data-key="grain" data-cat="contract">
+      <div class="head">
+        <span class="no">5</span>
+        <span class="title">Mixed grain in the summary CSV</span>
+        <span class="sev medium"><span class="cat">contract</span></span>
+      </div>
+      <div class="body">
+        <div class="code"><div class="cap"><a>run/lib/export_report.py</a></div>
+          <div class="ln"><span class="num">65</span><span class="src" style="--i:8">        <span class="kw">for</span> country, revenue, orders <span class="kw">in</span> <span class="fn">revenue_by_country</span>(month):</span></div>
+          <div class="ln"><span class="num">66</span><span class="src" style="--i:12">            writer.<span class="fn">writerow</span>([month, country, revenue, orders])</span></div>
+          <div class="ln"><span class="num">67</span><span class="src" style="--i:8">        writer.<span class="fn">writerow</span>([month, <mark><span class="st">&quot;returns requested&quot;</span></mark>, <span class="fn">returns_in_month</span>(month), <span class="st">&quot;&quot;</span>])</span></div>
+        </div>
+        <p class="comment">The last row is a returns count, which breaks the grain of one row per ship country. <span class="rule">§12: a data product has a contract that defines its grain. <a>standards.md:251</a></span></p>
+        <div class="fix"><div class="cap">Suggested change</div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:8">        writer.<span class="fn">writerow</span>([month, <span class="st">"returns requested"</span>, <span class="fn">returns_in_month</span>(month), <span class="st">""</span>])</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:8">        <span class="fn">write_returns</span>(month, out.<span class="fn">with_name</span>(f<span class="st">"{month}-returns.csv"</span>))   <span class="cm"># new helper, separate file</span></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="item" data-key="door" data-cat="standards">
+      <div class="head">
+        <span class="no">6</span>
+        <span class="title">Bypasses the engine to connect to the warehouse</span>
+        <span class="sev medium"><span class="cat">architecture</span></span>
+      </div>
+      <div class="body">
+        <div class="code"><div class="cap"><a>run/lib/export_report.py</a></div>
+          <div class="ln"><span class="num">38</span><span class="src" style="--i:4">    <span class="st">&quot;&quot;&quot;Net revenue and orders per ship country for one month, from the one big table.&quot;&quot;&quot;</span></span></div>
+          <div class="ln"><span class="num">39</span><span class="src" style="--i:4">    con = <mark>duckdb.<span class="fn">connect</span>(<span class="fn">str</span>(WAREHOUSE), read_only=<span class="kw">True</span>)</mark></span></div>
+        </div>
+        <p class="comment">Unlike engine.connect(), this connection does not set the time zone to UTC. <span class="rule">§2: run/lib/engine.py is the only entry point to the warehouse. <a>standards.md:29</a></span></p>
+        <div class="fix"><div class="cap">Suggested change</div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:4">    con = duckdb.<span class="fn">connect</span>(<span class="fn">str</span>(WAREHOUSE), read_only=<span class="kw">True</span>)</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:4">    con = engine.<span class="fn">connect</span>()</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="item" data-key="cost" data-cat="performance">
+      <div class="head">
+        <span class="no">7</span>
+        <span class="title">Returns file loaded into memory for one count</span>
+        <span class="sev medium"><span class="cat">performance</span></span>
+      </div>
+      <div class="body">
+        <div class="code"><div class="cap"><a>run/lib/export_report.py</a></div>
+          <div class="ln"><span class="num">55</span><span class="src" style="--i:4">    returns = <mark><span class="fn">load_csv_file</span>(EXPORT_DIR / <span class="st">&quot;commerce&quot;</span> / <span class="st">&quot;returns.csv&quot;</span>, columns)</mark></span></div>
+          <div class="ln"><span class="num">56</span><span class="src" style="--i:4">    <span class="kw">return</span> <span class="fn">int</span>(returns[<span class="st">&quot;requested_on&quot;</span>].str.<span class="fn">startswith</span>(month).<span class="fn">sum</span>())</span></div>
+        </div>
+        <p class="comment">Loads 35,131 rows and 13 columns into memory for one count. <span class="rule">§8: SQL where SQL can express it, Python where it cannot. <a>standards.md:182</a></span></p>
+        <div class="fix"><div class="cap">Suggested change</div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:4">    returns = <span class="fn">load_csv_file</span>(EXPORT_DIR / <span class="st">"commerce"</span> / <span class="st">"returns.csv"</span>, columns)</span></div>
+            <div class="d minus"><span class="g">-</span><span class="t" style="--i:4">    <span class="kw">return</span> <span class="fn">int</span>(returns[<span class="st">"requested_on"</span>].str.<span class="fn">startswith</span>(month).<span class="fn">sum</span>())</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:4">    path = EXPORT_DIR / <span class="st">"commerce"</span> / <span class="st">"returns.csv"</span></span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:4">    sql = <span class="st">"SELECT count(*) FROM read_csv(?) WHERE strftime(requested_on, '%Y-%m') = ?"</span></span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:4">    <span class="kw">return</span> engine.<span class="fn">query</span>(sql, [<span class="fn">str</span>(path), month])[0][0]</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="item" data-key="docs" data-cat="docs">
+      <div class="head">
+        <span class="no">8</span>
+        <span class="title">No runbook row, no contract</span>
+        <span class="sev medium"><span class="cat">docs</span></span>
+      </div>
+      <div class="body">
+        <div class="code"><div class="cap"><a>run/lib/export_report.py</a></div>
+          <div class="ln"><span class="num">59</span><span class="src" style="--i:0"><span class="kw">def</span> <mark><span class="fn">write_summary</span></mark>(month: <span class="fn">str</span>, out: Path) -&gt; Path:</span></div>
+          <div class="ln"><span class="num">60</span><span class="src" style="--i:4">    <span class="st">&quot;&quot;&quot;Writes the summary of one month as a CSV, one row per ship country, with the returns of the month in the last row.&quot;&quot;&quot;</span></span></div>
+        </div>
+        <p class="comment">A new command and a new CSV for Finance: no row in the runbook, no contract under docs/data-products. <span class="rule">§12: docs are updated in the same PR as the code. <a>standards.md:254</a></span></p>
+        <div class="fix"><div class="cap">Suggested change</div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:0">docs/runbook.md: 1 row in the commands table, with its expected output</span></div>
+            <div class="d plus"><span class="g">+</span><span class="t" style="--i:0">docs/data-products/month_end_summary/contract.yaml: columns, grain, consumer</span></div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="group closed" id="low">
+    <h2 class="low">Low risk<span class="count">· 2</span></h2>
+    <div class="list">
+      <div class="item small" data-key="columns" data-cat="style"><div class="head"><span class="no">9</span><span class="title">SELECT list not one column per line</span><span class="sev low"><span class="cat">style</span></span></div></div>
+      <div class="item small" data-key="runs" data-cat="style"><div class="head"><span class="no">10</span><span class="title">Module docstring missing the run command</span><span class="sev low"><span class="cat">docs</span></span></div></div>
+    </div>
+  </div>
+
+</main>
+<script>
+(function () {
+  var KEY = 'review:feat/month-end-summary';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { state = {}; }
+  var items = Array.prototype.slice.call(document.querySelectorAll('.item'));
+  var groups = Array.prototype.slice.call(document.querySelectorAll('.group'));
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  items.forEach(function (it) {
+    var key = it.getAttribute('data-key');
+    if (!it.classList.contains('small')) {
+      it.querySelector('.head').addEventListener('click', function (e) { if (e.target.closest('a')) return; it.classList.toggle('open'); });
+    }
+  });
+  groups.forEach(function (g) { g.querySelector('h2').addEventListener('click', function () { g.classList.toggle('closed'); }); });
+})();
+</script>
+</body>
+</html>

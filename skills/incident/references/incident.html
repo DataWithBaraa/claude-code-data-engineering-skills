@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>2026-08-19 · Commerce renamed a column</title>
+<style>
+@font-face{font-family:'Bricolage Grotesque';font-weight:600;font-display:block;src:url('fonts/BricolageGrotesque-600.woff2') format('woff2');}
+@font-face{font-family:'Bricolage Grotesque';font-weight:700;font-display:block;src:url('fonts/BricolageGrotesque-700.woff2') format('woff2');}
+@font-face{font-family:'Bricolage Grotesque';font-weight:800;font-display:block;src:url('fonts/BricolageGrotesque-800.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-weight:500;font-display:block;src:url('fonts/JetBrainsMono-500.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-weight:600;font-display:block;src:url('fonts/JetBrainsMono-600.woff2') format('woff2');}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0f0a1e;--ink:#ece7f8;--ink-2:rgba(236,231,248,.66);--ink-3:rgba(236,231,248,.48);--line:rgba(236,231,248,.14);
+  --purple:#8a63f2;--purple-soft:#c9b8ff;--gold:#ffd23f;--red:#ff8a73;--green:#5fe3a1;--plaque:#1a1230;}
+.err,.rowcard,.copy{background:var(--plate);border-color:var(--plate-border);}
+html{background:var(--bg);}
+body{font-family:'Bricolage Grotesque',sans-serif;color:var(--ink);background:var(--bg);font-size:24px;line-height:1.45;-webkit-font-smoothing:antialiased;}
+main{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:72px 48px 96px;}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;}
+.nw{white-space:nowrap;}
+/* head */
+.status{display:flex;align-items:center;gap:16px;margin-top:0;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);}
+
+h1{margin-top:16px;font-size:68px;font-weight:800;letter-spacing:-.022em;line-height:1.04;}
+.lead{margin-top:22px;font-size:28px;line-height:1.4;color:var(--ink);max-width:1180px;}
+/* the summary: nine facts, a grid that reads as a table */
+.facts{display:grid;grid-template-columns:repeat(3,1fr);margin-top:40px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.fact{padding:24px 28px 24px 0;border-bottom:1px solid var(--line);}
+.fact:nth-child(3n+2),.fact:nth-child(3n+3){border-left:1px solid var(--line);padding-left:28px;}
+.fact:nth-last-child(-n+3){border-bottom:0;}
+.fact .v{text-wrap:balance;}
+.fact svg{width:36px;height:36px;color:var(--purple-soft);margin-top:-4px;}
+.fact svg *{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.fact .l{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);}
+.fact .v{margin-top:8px;font-size:28px;font-weight:700;line-height:1.2;color:var(--ink);letter-spacing:-.01em;}
+.fact .v .mono{font-size:25px;font-weight:600;color:var(--purple-soft);}
+/* the severity meter: three steps, the lit one carries the state */
+.meter{display:inline-flex;align-items:flex-end;gap:5px;height:26px;margin-left:14px;vertical-align:baseline;}
+.meter i{display:block;width:14px;border-radius:3px 3px 2px 2px;background:rgba(236,231,248,.32);}
+.meter i:nth-child(1){height:8px;} .meter i:nth-child(2){height:17px;} .meter i:nth-child(3){height:26px;}
+.meter.red i:nth-child(3){background:var(--red);}
+.meter.held i:nth-child(2){background:var(--purple);}
+.meter.green i:nth-child(1){background:var(--purple-soft);}
+.fact .v.sev b{color:var(--red);font-weight:700;}
+.fact .v.sev .top{display:flex;align-items:baseline;}
+/* sections */
+section{margin-top:72px;}
+section.map svg{display:block;width:100%;height:auto;margin-top:0;}
+section > header{display:flex;align-items:baseline;gap:22px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:26px;}
+section > header .n{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:22px;color:var(--purple-soft);letter-spacing:.1em;}
+section > header h2{font-size:40px;font-weight:700;letter-spacing:-.015em;line-height:1.1;}
+p{max-width:1180px;}
+p,.lead,.row .b,.row .b small,ul.bul li{text-wrap:pretty;}
+/* rows, in the language of the deck */
+.rows{display:grid;row-gap:0;}
+.row{display:grid;grid-template-columns:200px minmax(0,1fr) 180px;column-gap:28px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--line);}
+.row:last-child{border-bottom:0;}
+.row .a{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:21px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);}
+.row .b{font-size:24px;color:var(--ink);}
+.row .b small{display:block;font-size:21px;color:var(--ink-2);margin-top:4px;}
+.row .b .mono,.row .b small .mono{color:var(--purple-soft);font-size:22px;}
+.row .c{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:22px;text-align:right;color:var(--ink-2);}
+.row .c.bad{color:var(--red);} .row .c.ok{color:var(--ink-2);}
+.row .c:empty{display:none;} .row:has(.c:empty) .b{grid-column:2/4;}
+/* the error as printed */
+.err{position:relative;margin-top:44px;padding:30px 34px 28px;background:var(--plaque);border:1px solid var(--line);border-radius:14px;}
+.err .tag.draft,.rowcard .tag.draft{position:absolute;left:34px;top:-18px;background:var(--bg);color:var(--ink-2);border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;}
+.err button.tag{position:absolute;right:34px;top:18px;cursor:pointer;background:transparent;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line);border-radius:8px;padding:5px 12px;}
+.err button.tag:hover{color:var(--ink);border-color:var(--ink-3);} .err button.tag.done{color:var(--green);border-color:rgba(95,227,161,.5);}
+.err pre{font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-weight:500;font-size:22px;line-height:1.55;color:var(--ink);white-space:pre-wrap;word-break:break-word;}
+.err pre b{color:var(--red);font-weight:600;}
+/* a row of the 18th beside a row of the 19th */
+.rows2{display:grid;grid-template-columns:1fr 1fr;column-gap:32px;margin:36px 0 0;}
+.cause{font-size:30px;line-height:1.35;color:var(--ink);max-width:1180px;}
+.cause .mono{font-size:27px;color:var(--purple-soft);}
+.rowcard{position:relative;background:var(--plaque);border:1px solid var(--line);border-radius:14px;padding:30px 34px 22px;}
+.rowcard pre{font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-weight:500;font-size:22px;line-height:1.6;color:var(--ink-2);white-space:pre-wrap;word-break:break-word;}
+.rowcard pre .was{color:var(--ink);font-weight:600;border-bottom:3px solid var(--red);}
+.rowcard pre .new{color:var(--purple-soft);font-weight:600;}
+.rowcard pre .add{color:var(--purple-soft);font-weight:600;}
+/* seen before: the counter card and the closest */
+.seen{display:grid;grid-template-columns:272px minmax(0,1fr);column-gap:0;}
+.count{padding:4px 40px 4px 0;}
+.count .k,.closest .k{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);}
+.count .n0{margin-top:10px;font-size:48px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ink);}
+.closest{padding:4px 0 4px 40px;border-left:1px solid var(--line);}
+.closest .tags{margin:0 0 14px;}
+.pill.id{color:var(--purple-soft);border-color:rgba(201,184,255,.45);}
+
+.closest h3{margin-top:10px;font-size:30px;font-weight:700;letter-spacing:-.01em;line-height:1.2;color:var(--ink);}
+.closest h3 .mono{font-size:28px;color:var(--purple-soft);font-weight:600;}
+.closest p{margin-top:14px;font-size:24px;line-height:1.45;color:var(--ink-2);max-width:900px;}
+/* bullets, the workaround and the solutions */
+ul.bul{list-style:none;display:grid;row-gap:12px;max-width:1180px;}
+ul.bul li{position:relative;padding-left:34px;font-size:24px;line-height:1.45;color:var(--ink);}
+ul.bul li::before{content:'';position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--purple);}
+ul.bul li .mono{font-size:23px;color:var(--purple-soft);}
+.sol{padding:26px 0 30px;border-bottom:1px solid var(--line);}
+.sol:first-of-type{padding-top:0;}
+.sol:last-child{border-bottom:0;padding-bottom:0;}
+.sol .meta{display:flex;gap:16px;align-items:baseline;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);}
+.sol h3{margin:10px 0 0;font-size:34px;font-weight:700;letter-spacing:-.015em;line-height:1.15;color:var(--ink);}
+.tags{display:flex;gap:12px;margin:8px 0 26px;}
+.pill{display:inline-flex;align-items:center;gap:9px;padding:5px 12px;line-height:1;border-radius:8px;border:1px solid rgba(236,231,248,.4);font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);}
+.pill svg{color:var(--purple-soft);} .pill svg *{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+.pill.gold{color:var(--bg);background:var(--gold);border-color:var(--gold);}
+.sol.pick h3{color:#fff;}
+/* copy-paste blocks */
+.copy{position:relative;margin-top:44px;background:var(--plaque);border:1px solid var(--line);border-radius:14px;padding:30px 34px 32px;}
+.copy button.tag{cursor:pointer;background:transparent;font:inherit;}
+.copy button.tag:hover{color:var(--ink);border-color:var(--ink-3);}
+.copy button.tag.done{color:var(--green);border-color:rgba(95,227,161,.5);}
+.copy .tag{position:absolute;right:34px;top:18px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line);border-radius:8px;padding:5px 12px;}
+.copy .tag.draft{color:var(--ink-2);border-color:var(--line);right:auto;left:34px;top:-18px;background:var(--bg);}
+.effort{margin:10px 0 22px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);}
+.effort b{color:var(--gold);font-weight:600;}
+.copy pre{font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-weight:500;font-size:22px;line-height:1.55;color:var(--ink);white-space:pre-wrap;word-break:break-word;}
+.copy pre b{font-weight:600;color:var(--purple-soft);}
+.copy + .copy{margin-top:56px;}
+.copy h3{font-size:24px;font-weight:700;margin-bottom:14px;color:var(--ink);}
+.copy h3.path{font-weight:500;font-size:22px;color:var(--purple-soft);}
+
+
+/* the head: title with severity, the map, three blocks, the error */
+.sevtag{display:inline-flex;align-items:center;vertical-align:middle;margin-left:18px;padding:6px 14px;line-height:1;border-radius:10px;border:2px solid var(--red);color:var(--red);background:rgba(255,138,115,.08);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:24px;letter-spacing:.14em;text-transform:uppercase;position:relative;top:-6px;}
+.map0{margin-top:40px;}
+.map0 svg{display:block;width:100%;height:auto;}
+.fbs{margin-top:34px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch;}
+.fb{border:1px solid var(--plate-border);border-radius:16px;background:var(--plate);padding:20px 24px 14px;}
+.fh{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--purple-soft);padding-bottom:12px;border-bottom:1px solid var(--line);}
+.fr{display:grid;grid-template-columns:132px minmax(0,1fr);column-gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid rgba(173,150,255,.1);}
+.fr:last-child{border-bottom:0;}
+.fl{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink-3);}
+.fv{font-size:22px;font-weight:700;line-height:1.3;color:var(--ink);}
+.fv .mono{font-size:20px;font-weight:600;color:var(--purple-soft);}
+.err0{margin-top:40px;}
+</style>
+</head>
+<body>
+<main>
+  <div class="status">incident report <span class="pill id">2026-08-19</span></div>
+  <h1>Commerce renamed a column. <span class="sevtag">high</span></h1>
+  <div class="map0"><svg viewBox="0 96 1344 98" width="1344" height="98" font-family="'Bricolage Grotesque',sans-serif">
+      <defs><style>
+        .nd{fill:#1a1230;stroke:rgba(236,231,248,.22);stroke-width:1.5}
+        .nd.bad{fill:rgba(255,138,115,.14);stroke:#ff8a73;stroke-width:3}
+        .nd.dim{stroke-dasharray:8 8;stroke:rgba(236,231,248,.22)}
+        .t{fill:#ece7f8;font-size:26px;font-weight:700;text-anchor:middle}
+        .t.dim{fill:rgba(236,231,248,.45)}
+        .s{fill:rgba(236,231,248,.62);font-size:20px;text-anchor:middle;font-family:'JetBrains Mono',monospace}
+        .s.bad{fill:#ff8a73} .s.dim{fill:rgba(236,231,248,.38)}
+        .ln{stroke:rgba(236,231,248,.3);stroke-width:2}
+        .ln.dim{stroke-dasharray:6 8;stroke:rgba(236,231,248,.2)}
+        .g{fill:#0f0a1e;stroke-width:3}
+      
+/* the ground, from the insight series: a radial purple ground, a faint grid, plates with a purple edge */
+:root{--ground:#080513;--plate:linear-gradient(160deg,#1b1436 0%,#110c24 100%);--plate-border:rgba(138,99,242,.28);--red:#ff8a73;}
+html{background:var(--ground);}
+body{background:var(--ground);}
+body{position:relative;min-height:100%;}
+body::before{content:'';position:absolute;left:0;right:0;top:0;height:min(1600px,100%);z-index:0;pointer-events:none;
+  background:radial-gradient(1500px 900px at 50% 420px,#161033 0%,#0e0a1d 55%,rgba(8,5,19,0) 100%);}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(173,150,255,.05) 1.2px,transparent 1.2px),linear-gradient(90deg,rgba(173,150,255,.05) 1.2px,transparent 1.2px);
+  background-size:46px 46px;}
+main,nav{position:relative;z-index:1;}
+:root{--line:rgba(173,150,255,.2);}
+.err .tag.draft,.rowcard .tag.draft,.copy .tag.draft{background:#1b1436;border-color:var(--plate-border);}
+</style></defs>
+      <!-- nodes -->
+      <rect class="nd" x="0" y="100" width="188" height="90" rx="14"/><text class="t" x="94" y="138">landing</text><text class="s" x="94" y="170">file complete</text>
+      <rect class="nd" x="289" y="100" width="188" height="90" rx="14"/><text class="t" x="383" y="138">bronze</text><text class="s" x="383" y="170">5,308 rows in</text>
+      <rect class="nd bad" x="578" y="100" width="188" height="90" rx="14"/><text class="t" x="672" y="138">silver_clean</text><text class="s bad" x="672" y="170">failed 05:31</text>
+      <rect class="nd dim" x="867" y="100" width="188" height="90" rx="14"/><text class="t dim" x="961" y="138">silver_core</text><text class="s dim" x="961" y="170">not built</text>
+      <rect class="nd dim" x="1156" y="100" width="188" height="90" rx="14"/><text class="t dim" x="1250" y="138">gold</text><text class="s dim" x="1250" y="170">at 2026-08-18</text>
+      <!-- wires and gates -->
+      <line class="ln" x1="188" y1="145" x2="289" y2="145"/><circle class="g" cx="238.5" cy="145" r="12" stroke="rgba(236,231,248,.5)"/>
+      <line class="ln" x1="477" y1="145" x2="578" y2="145"/><circle class="g" cx="527.5" cy="145" r="12" stroke="rgba(236,231,248,.5)"/>
+      <line class="ln dim" x1="766" y1="145" x2="867" y2="145"/><line class="ln dim" x1="1055" y1="145" x2="1156" y2="145"/>
+    </svg></div>
+  <div class="fbs"><div class="fb"><div class="fh">Where</div><div class="fr"><span class="fl">source</span><span class="fv">commerce</span></div><div class="fr"><span class="fl">job</span><span class="fv"><span class="mono">run/daily.py</span></span></div><div class="fr"><span class="fl">step</span><span class="fv"><span class="mono">silver_clean</span></span></div><div class="fr"><span class="fl">failed in</span><span class="fv"><span class="mono">commerce/orders.sql</span></span></div><div class="fr"><span class="fl">table</span><span class="fv"><span class="mono">silver_clean.orders</span></span></div></div><div class="fb"><div class="fh">When</div><div class="fr"><span class="fl">when</span><span class="fv"><span class="nw">2026-08-19</span> 05:31</span></div><div class="fr"><span class="fl">seen before</span><span class="fv">1 (<span class="nw">2026-06-03</span>)</span></div><div class="fr"><span class="fl">impact</span><span class="fv">gold marts as of <span class="nw">2026-08-18</span></span></div></div><div class="fb"><div class="fh">Status</div><div class="fr"><span class="fl">root cause</span><span class="fv">commerce renamed <span class="mono">status_code</span> to <span class="mono">status</span></span></div><div class="fr"><span class="fl">status</span><span class="fv">open, waiting for commerce</span></div><div class="fr"><span class="fl">next step</span><span class="fv">fix the schema before the <span class="nw">2026-08-20</span> run</span></div></div></div>
+  <div class="err0"><div class="err">
+      <span class="tag draft">error message</span>
+<pre>silver_clean  failed   rows in  5,308   rows out  0   0.41 s
+<b>RuntimeError: statement 3 of 16 failed:
+Binder Error: Referenced column "status_code" not found in FROM clause!</b>
+Candidate bindings: "status", "sales_channel"
+<span class="nw">2026-08-19</span>: failed. silver_clean failed on orders: column status_code not found. The gold tasks were skipped. Consumers read the gold of <span class="nw">2026-08-18</span>.</pre>
+    </div></div>
+
+  <section>
+    <header><span class="n">01</span><h2>Root cause</h2></header>
+    <p class="cause">The file delivered by the source commerce, <span class="mono"><span class="nw">2026-08-19.jsonl</span></span>, has a new schema: the column <span class="mono">status_code</span> is called <span class="mono">status</span>. The orders cleaning step in the silver layer, <span class="mono">commerce/orders.sql</span>, still reads the column as <span class="mono">status_code</span>. The name is no longer in the file, so the step fails and the gold tasks are skipped.</p>
+    <div class="rows2">
+      <div class="rowcard"><span class="tag draft"><span class="nw">2026-08-18</span> · before</span>
+<pre>"row": {
+    <span class="was">"status_code"</span>: 40,
+    "channel": "app"
+}</pre></div>
+      <div class="rowcard"><span class="tag draft"><span class="nw">2026-08-19</span> · after</span>
+<pre>"row": {
+    <span class="new">"status"</span>: 40,
+    "channel": "app",
+    <span class="add">"sales_channel": "web"</span>
+}</pre></div>
+    </div>
+  </section>
+
+  <section>
+    <header><span class="n">02</span><h2>Seen before</h2></header>
+    <div class="seen">
+      <div class="count"><div class="k">Occurrences</div><div class="n0">1</div></div>
+      <div class="closest">
+        <div class="tags"><span class="pill"><span class="nw">2026-06-03</span></span><span class="pill">warehouse</span></div>
+        <h3>The stock export renamed <span class="mono">qty_on_hand</span> to <span class="mono">on_hand</span></h3>
+        <p>Known fix: the new name was mapped to the column of the data contract, the 3 pipeline files of the table were regenerated, and the job was rerun for <span class="nw">2026-06-03</span>. Resolved in 2 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <header><span class="n">03</span><h2>Workaround</h2></header>
+    <ul class="bul">
+      <li>Ask commerce to resend the file of <span class="nw">2026-08-19</span> in schema version 1, then rerun the daily job.</li>
+      <li>Until then, the gold marts hold data as of <span class="nw">2026-08-18</span>. No data loss.</li>
+    </ul>
+  </section>
+
+  <section>
+    <header><span class="n">04</span><h2>Solutions</h2></header>
+    <div class="sol pick">
+      <div class="meta"><span class="no">Solution 1</span></div>
+      <h3>Fix the schema</h3>
+      <div class="effort">3 hours · <b>recommended</b></div>
+      <ul class="bul">
+        <li>In the commerce data contract, map the source's new name <span class="mono">status</span> to the column <span class="mono">status_code</span>. The old name stays accepted, so a resend in schema version 1 also loads.</li>
+        <li>Regenerate the bronze step and the orders cleaning step from the data contract. Silver and gold keep the column name <span class="mono">status_code</span>, so nothing changes for consumers.</li>
+        <li><span class="mono">sales_channel</span> stays in bronze until commerce defines it.</li>
+        <li>Rerun the daily job for <span class="nw">2026-08-19</span>.</li>
+      </ul>
+    </div>
+    <div class="sol">
+      <div class="meta"><span class="no">Solution 2</span></div>
+      <h3>Check the schema at gate 1</h3>
+      <div class="effort">2 days</div>
+      <ul class="bul">
+        <li>Before any data is loaded, gate 1 compares the columns of the file with the contract.</li>
+        <li>A new column stays in bronze and is reported. The job does not fail.</li>
+        <li>An unlisted rename quarantines the file at gate 1, with a message naming the column that changed.</li>
+        <li>A rename listed in the contract passes gate 1 without a code change.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <header><span class="n">05</span><h2>Future risks</h2></header>
+    <ul class="bul">
+      <li>A source can rename a column in any delivery.</li>
+      <li>Until Solution 2 is deployed, a rename in any of the 16 commerce tables fails the same way: their cleaning steps read columns by name.</li>
+      <li>The CSV files and the finance workbook would not fail this way: their columns are checked against the contract before anything loads.</li>
+    </ul>
+  </section>
+
+  <section>
+    <header><span class="n">06</span><h2>Email drafts</h2></header>
+    <div class="copy">
+      <span class="tag draft">draft · not sent</span>
+      <button class="tag" type="button" data-copy>copy</button>
+      <h3>To the consumers</h3>
+<pre><b>To:</b>      Finance, Commercial, Marketing, Data Science
+<b>Subject:</b> Gold marts not refreshed: data as of <span class="nw">2026-08-18</span>
+
+Hi all,
+
+The daily job failed on <span class="nw">2026-08-19</span> and did not build the gold marts. Commerce renamed a column in its daily file, so no data from <span class="nw">2026-08-19</span> is in the gold marts.
+
+What is affected: every gold mart holds data as of <span class="nw">2026-08-18</span>.
+What is not affected: all data up to and including <span class="nw">2026-08-18</span>.
+When it will be fixed: by the <span class="nw">2026-08-20</span> run at the latest, sooner if commerce resends the file of <span class="nw">2026-08-19</span> in schema version 1. We asked commerce for it on 2026-08-19. We will email you when the gold marts are up to date.
+
+Data engineering</pre>
+    </div>
+    <div class="copy">
+      <span class="tag draft">draft · not sent</span>
+      <button class="tag" type="button" data-copy>copy</button>
+      <h3>To the source owner</h3>
+<pre><b>To:</b>      the commerce source owner
+<b>Subject:</b> File of <span class="nw">2026-08-19</span>: status_code renamed to status
+
+Hi,
+
+The file of <span class="nw">2026-08-19</span> renamed the orders column status_code to status and added sales_channel, still under schema version 1. The daily job failed at 05:31, and every gold mart holds data as of <span class="nw">2026-08-18</span>.
+
+We need 2 things:
+1. The file of <span class="nw">2026-08-19</span> again in schema version 1, by <span class="nw">2026-08-19</span> 12:00, so we can rerun the daily job.
+2. What sales_channel means and how it differs from channel. If schema version 2 is planned, we write its contract first, as agreed in <span class="nw">2026-07</span>.
+
+Thanks,
+Data engineering</pre>
+    </div>
+  </section>
+
+  <section>
+    <header><span class="n">07</span><h2>Log entry</h2></header>
+    <div class="copy">
+      <span class="tag draft">log entry · draft</span>
+      <h3 class="mono path">knowledge/incidents/log.yaml</h3>
+<pre>- date: "<span class="nw">2026-08-19</span>"
+  title: Commerce renamed status_code to status, and the orders cleaning step failed
+  tables: [orders]
+  cause: >-
+    In the file of <span class="nw">2026-08-19</span>, commerce renamed the orders column status_code
+    to status and added sales_channel, still under schema version 1. The
+    orders cleaning step reads status_code by name, so it failed and gold was
+    not built.
+  workaround: >-
+    The gold marts hold data as of <span class="nw">2026-08-18</span> until commerce resends the file
+    of <span class="nw">2026-08-19</span> in schema version 1 or the schema fix is deployed.
+  fix: >-
+    proposed: fix the schema in the commerce data contract (map the source's status
+    to status_code), regenerate bronze and the orders cleaning step, rerun
+    the daily job for <span class="nw">2026-08-19</span>
+  status: open
+  class_check: >-
+    Searched every cleaning step: all 16 read columns by name, and gate 2 only
+    flags a rename.</pre>
+    </div>
+  </section>
+
+</main>
+<script>
+document.querySelectorAll('[data-copy]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var pre=b.parentElement.querySelector('pre'); var txt=pre.innerText;
+    function done(){b.textContent='copied';b.classList.add('done');setTimeout(function(){b.textContent='copy';b.classList.remove('done');},1600);}
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(done,fallback);}else{fallback();}
+    function fallback(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+  });
+});
+</script>
+</body>
+</html>

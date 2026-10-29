@@ -1,0 +1,16 @@
+{
+  "name": "data-engineering",
+  "description": "16 Claude Code skills for data engineers: profile, contract, metadata, incident, quality, reconcile, impact, toolkit, data product, docs, pull request review, big review, cost review, test data, knowledge refresh and migration.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Data With Baraa"
+  },
+  "license": "MIT",
+  "keywords": [
+    "data-engineering",
+    "data-quality",
+    "data-contracts",
+    "incidents",
+    "skills"
+  ]
+}

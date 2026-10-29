@@ -1,0 +1,134 @@
+# The data contract between the data platform and the purchasing system, as agreed after the profile.
+# Open Data Contract Standard (ODCS), version 3.1.0. An example: 1 of the 10 tables of the source.
+# The columns, types, keys and descriptions come from the metadata file of the source.
+# A fictional company and fictional data.
+
+kind: DataContract
+apiVersion: v3.1.0
+id: purchasing
+name: purchasing
+version: 1.1.0
+status: active
+description:
+  purpose: "The purchase order lines of the purchasing system, delivered every day to the data platform."
+
+servers:
+  - server: landing
+    type: local
+    path: data/landing/purchasing
+    format: csv
+    description: "Where the files of this source land, as delivered."
+
+team:
+  name: purchasing
+  members:
+    - username: purchasing-owner
+      role: owner
+      description: "Owns the purchase orders and answers for the delivery."
+    - username: data-platform
+      role: consumer
+      description: "Loads the files and runs the checks."
+
+support:
+  - channel: purchasing-data
+    tool: email
+    url: "mailto:purchasing-data@example.com"
+    description: "Questions about a delivery and announcements of a change."
+
+slaProperties:
+  - property: frequency
+    value: 1
+    unit: d
+    description: "One file every day, with the lines that changed the day before."
+  - property: timeOfAvailability
+    value: "05:00+00:00"
+    description: "The file is in the landing by 05:00 UTC."
+
+customProperties:
+  - property: changeNotice
+    value: 14 days
+    description: "A change of the schema or the format is announced 14 days before, with a new version of this contract."
+
+schema:
+  - name: purchase_order_lines
+    physicalName: purchase_order_lines
+    physicalType: table
+    description: "One line of a purchase order, one material."
+    customProperties:
+      - property: delimiter
+        value: ";"
+      - property: encoding
+        value: utf-8
+      - property: decimalSeparator
+        value: "."
+      - property: nullToken
+        value: ""
+      - property: load
+        value: changes
+      - property: deletes
+        value: "A deleted line arrives once more with DELETION_FLAG L. A line is never removed from a file without that flag."
+    properties:
+      - name: po_id
+        physicalName: PO_ID
+        logicalType: string
+        physicalType: VARCHAR
+        required: true
+        primaryKey: true
+        primaryKeyPosition: 1
+        description: "The purchase order the line belongs to."
+      - name: line_no
+        physicalName: LINE_NO
+        logicalType: integer
+        physicalType: INTEGER
+        required: true
+        primaryKey: true
+        primaryKeyPosition: 2
+        description: "The number of the line within the order."
+      - name: material_no
+        physicalName: MATERIAL_NO
+        logicalType: string
+        physicalType: VARCHAR
+        required: true
+        description: "The material that was ordered."
+      - name: quantity
+        physicalName: QUANTITY
+        logicalType: integer
+        physicalType: INTEGER
+        required: true
+        description: "The ordered units."
+      - name: net_amount
+        physicalName: NET_AMOUNT
+        logicalType: number
+        physicalType: DECIMAL(15,2)
+        required: true
+        description: "The net amount of the line, in the currency of the order."
+      - name: plant
+        physicalName: PLANT
+        logicalType: string
+        physicalType: VARCHAR
+        required: false
+        description: "The plant the line is delivered to."
+      - name: deletion_flag
+        physicalName: DELETION_FLAG
+        logicalType: string
+        physicalType: VARCHAR
+        required: false
+        description: "L when the line was deleted in the source, S when it is blocked, empty otherwise."
+      - name: updated_at
+        physicalName: UPDATED_AT
+        logicalType: timestamp
+        logicalTypeOptions:
+          format: "yyyy-MM-dd HH:mm:ss"
+          defaultTimezone: UTC
+        physicalType: TIMESTAMP
+        required: true
+        description: "When the source wrote the row, in UTC. The extract time, not a change date."
+    quality:
+      - type: sql
+        description: "Every line arrives once per file."
+        query: "SELECT COUNT(*) - COUNT(DISTINCT po_id || '-' || line_no) FROM purchase_order_lines"
+        mustBe: 0
+      - type: sql
+        description: "No line with zero or negative units."
+        query: "SELECT COUNT(*) FROM purchase_order_lines WHERE quantity <= 0"
+        mustBe: 0
