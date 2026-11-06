@@ -4,7 +4,9 @@
 
 16 Claude Code skills for the work of a data engineer beyond writing code: profiling a new source, investigating a failed pipeline, building the metadata, reviewing changes, documenting, and keeping the platform clean. Most of them end in a web page you can read and share.
 
-Seven of them are from the video **I Built My Own Data Engineering Tools with Claude Code** on the [Data With Baraa](https://www.youtube.com/@DataWithBaraa) YouTube channel. The example pages describe a fictional company with fictional data.
+⭐ If these skills help you, star the repository so other data engineers can find them too.
+
+Seven of them are from the video [How I Use Claude Code as a Data Engineer](https://youtu.be/F5lZj1bQyUw) on the [Data With Baraa](https://www.youtube.com/@DataWithBaraa) YouTube channel. The example pages describe a fictional company with fictional data.
 
 > [!NOTE]
 > This is the first draft. We will expand and enhance the skills over time. Questions, ideas, or a skill of your own to share? Join the [🤖・claude-code channel on Discord](https://discord.gg/AFZet4FXF).
